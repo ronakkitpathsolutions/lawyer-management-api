@@ -192,6 +192,30 @@ export const VALIDATION_MESSAGES = {
     LINE: {
       INVALID_LENGTH: 'LINE ID must be between 3-50 characters',
     },
+    MARITAL_STATUS: {
+      INVALID:
+        'Marital status must be one of: single, married, common_law, divorced, widowed',
+      REQUIRED: 'Marital status is required',
+    },
+    FATHER_NAME: {
+      TOO_SHORT: 'Father name must be at least 2 characters long',
+      TOO_LONG: 'Father name must not exceed 100 characters',
+      INVALID: 'Father name contains invalid characters',
+    },
+    MOTHER_NAME: {
+      TOO_SHORT: 'Mother name must be at least 2 characters long',
+      TOO_LONG: 'Mother name must not exceed 100 characters',
+      INVALID: 'Mother name contains invalid characters',
+    },
+    MARRIED_TO_THAI: {
+      INVALID: 'Married to Thai field must be a boolean value (true/false)',
+    },
+    HAS_CARD: {
+      INVALID: 'Yellow/Pink card field must be a boolean value (true/false)',
+    },
+    HAS_PROPERTY: {
+      INVALID: 'Property ownership field must be a boolean value (true/false)',
+    },
     IS_ACTIVE: {
       INVALID: 'is_active must be a boolean value',
       REQUIRED: 'is_active status is required',

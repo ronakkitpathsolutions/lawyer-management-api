@@ -22,6 +22,15 @@ export const validateClientSearch = (req, res, next) => {
     page: req.query.page ? parseInt(req.query.page, 10) : undefined,
     limit: req.query.limit ? parseInt(req.query.limit, 10) : undefined,
     is_active: req.query.is_active ? req.query.is_active === 'true' : undefined,
+    married_to_thai_and_registered: req.query.married_to_thai_and_registered
+      ? req.query.married_to_thai_and_registered === 'true'
+      : undefined,
+    has_yellow_or_pink_card: req.query.has_yellow_or_pink_card
+      ? req.query.has_yellow_or_pink_card === 'true'
+      : undefined,
+    has_bought_property_in_thailand: req.query.has_bought_property_in_thailand
+      ? req.query.has_bought_property_in_thailand === 'true'
+      : undefined,
     created_by: req.query.created_by
       ? parseInt(req.query.created_by, 10)
       : undefined,

@@ -99,6 +99,52 @@ const ClientValidationSchema = z.object({
     .trim()
     .optional()
     .nullable(),
+  marital_status: z
+    .enum(['single', 'married', 'common_law', 'divorced', 'widowed'], {
+      errorMap: () => ({
+        message: VALIDATION_MESSAGES.CLIENT.MARITAL_STATUS.INVALID,
+      }),
+    })
+    .optional()
+    .nullable(),
+  father_name: z
+    .string()
+    .min(2, VALIDATION_MESSAGES.CLIENT.FATHER_NAME.TOO_SHORT)
+    .max(100, VALIDATION_MESSAGES.CLIENT.FATHER_NAME.TOO_LONG)
+    .trim()
+    .optional()
+    .nullable(),
+  mother_name: z
+    .string()
+    .min(2, VALIDATION_MESSAGES.CLIENT.MOTHER_NAME.TOO_SHORT)
+    .max(100, VALIDATION_MESSAGES.CLIENT.MOTHER_NAME.TOO_LONG)
+    .trim()
+    .optional()
+    .nullable(),
+  married_to_thai_and_registered: z
+    .boolean({
+      errorMap: () => ({
+        message: VALIDATION_MESSAGES.CLIENT.MARRIED_TO_THAI.INVALID,
+      }),
+    })
+    .optional()
+    .nullable(),
+  has_yellow_or_pink_card: z
+    .boolean({
+      errorMap: () => ({
+        message: VALIDATION_MESSAGES.CLIENT.HAS_CARD.INVALID,
+      }),
+    })
+    .optional()
+    .nullable(),
+  has_bought_property_in_thailand: z
+    .boolean({
+      errorMap: () => ({
+        message: VALIDATION_MESSAGES.CLIENT.HAS_PROPERTY.INVALID,
+      }),
+    })
+    .optional()
+    .nullable(),
   is_active: z.boolean().optional().default(true),
 });
 
@@ -116,6 +162,12 @@ export const ClientSearchSchema = z.object({
   sortBy: z.string().optional().default('createdAt'),
   sortOrder: z.enum(['ASC', 'DESC']).optional().default('DESC'),
   nationality: z.string().optional(),
+  marital_status: z
+    .enum(['single', 'married', 'common_law', 'divorced', 'widowed'])
+    .optional(),
+  married_to_thai_and_registered: z.boolean().optional(),
+  has_yellow_or_pink_card: z.boolean().optional(),
+  has_bought_property_in_thailand: z.boolean().optional(),
   is_active: z.boolean().optional(),
   created_by: z.number().int().optional(),
 });

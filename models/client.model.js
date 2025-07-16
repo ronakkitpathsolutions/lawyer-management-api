@@ -182,6 +182,87 @@ const Client = sequelize.define(
         },
       },
     },
+    marital_status: {
+      type: DataTypes.ENUM(
+        'single',
+        'married',
+        'common_law',
+        'divorced',
+        'widowed'
+      ),
+      allowNull: true,
+      validate: {
+        isIn: {
+          args: [['single', 'married', 'common_law', 'divorced', 'widowed']],
+          msg:
+            VALIDATION_MESSAGES.CLIENT.MARITAL_STATUS?.INVALID ||
+            'Invalid marital status',
+        },
+      },
+      field: 'marital_status',
+    },
+    father_name: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      validate: {
+        len: {
+          args: [2, 100],
+          msg:
+            VALIDATION_MESSAGES.CLIENT.FATHER_NAME?.TOO_LONG ||
+            'Father name is too long',
+        },
+      },
+      field: 'father_name',
+    },
+    mother_name: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      validate: {
+        len: {
+          args: [2, 100],
+          msg:
+            VALIDATION_MESSAGES.CLIENT.MOTHER_NAME?.TOO_LONG ||
+            'Mother name is too long',
+        },
+      },
+      field: 'mother_name',
+    },
+    married_to_thai_and_registered: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      validate: {
+        isBoolean: {
+          msg:
+            VALIDATION_MESSAGES.CLIENT.MARRIED_TO_THAI?.INVALID ||
+            'Invalid value for married to Thai field',
+        },
+      },
+      field: 'married_to_thai_and_registered',
+    },
+    has_yellow_or_pink_card: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      validate: {
+        isBoolean: {
+          msg:
+            VALIDATION_MESSAGES.CLIENT.HAS_CARD?.INVALID ||
+            'Invalid value for card field',
+        },
+      },
+      field: 'has_yellow_or_pink_card',
+    },
+    has_bought_property_in_thailand: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      validate: {
+        isBoolean: {
+          msg:
+            VALIDATION_MESSAGES.CLIENT.HAS_PROPERTY?.INVALID ||
+            'Invalid value for property field',
+        },
+      },
+      field: 'has_bought_property_in_thailand',
+    },
     is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -311,6 +392,8 @@ Client.paginateWithSearch = async function (options = {}) {
         { email: { [Op.iLike]: `%${searchTerm}%` } },
         { passport_number: { [Op.iLike]: `%${searchTerm}%` } },
         { nationality: { [Op.iLike]: `%${searchTerm}%` } },
+        { father_name: { [Op.iLike]: `%${searchTerm}%` } },
+        { mother_name: { [Op.iLike]: `%${searchTerm}%` } },
       ];
     }
 
