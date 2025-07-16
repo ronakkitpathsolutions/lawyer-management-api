@@ -231,6 +231,45 @@ export const VALIDATION_MESSAGES = {
     },
   },
 
+  // Visa validation messages
+  VISA: {
+    CLIENT_ID: {
+      REQUIRED: 'Client ID is required',
+      INVALID: 'Client ID must be a valid integer',
+      NOT_FOUND: 'Client not found',
+    },
+    EXISTING_VISA: {
+      REQUIRED: 'Existing visa type is required',
+      INVALID: 'Invalid existing visa type',
+      EMPTY: 'Existing visa type cannot be empty',
+    },
+    WISHED_VISA: {
+      REQUIRED: 'Wished visa type is required',
+      INVALID: 'Invalid wished visa type',
+      EMPTY: 'Wished visa type cannot be empty',
+    },
+    LATEST_ENTRY_DATE: {
+      INVALID: 'Latest entry date must be a valid date',
+      REQUIRED: 'Latest entry date is required when available',
+    },
+    EXISTING_VISA_EXPIRY: {
+      INVALID: 'Existing visa expiry date must be a valid date',
+      PAST_DATE: 'Existing visa expiry date cannot be in the past',
+    },
+    INTENDED_DEPARTURE_DATE: {
+      INVALID: 'Intended departure date must be a valid date',
+    },
+    GENERAL: {
+      NOT_FOUND: 'Visa record not found',
+      ALREADY_EXISTS: 'Visa record already exists',
+      CREATION_FAILED: 'Failed to create visa record',
+      UPDATE_FAILED: 'Failed to update visa record',
+      DELETE_FAILED: 'Failed to delete visa record',
+      UNAUTHORIZED: 'Unauthorized access',
+      FORBIDDEN: 'Access forbidden - Admin access required',
+    },
+  },
+
   // Common validation messages
   COMMON: {
     ID: {

@@ -1,5 +1,4 @@
 import { createApiResponse } from '../utils/helper.js';
-import { Client as ClientValidation } from '../utils/validations/index.js';
 import { createValidationMiddleware } from './validation.middleware.js';
 import Client from '../models/client.model.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';

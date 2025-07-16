@@ -1,6 +1,7 @@
 import * as UserValidation from './user.validation.js';
 import * as ClientValidation from './client.validation.js';
 import * as CommonValidation from './common.validation.js';
+import * as VisaValidation from './visa.validation.js';
 
 export const User = {
   schemas: {
@@ -35,6 +36,21 @@ export const Client = {
     create: ClientValidation.validateCreateClient,
     update: ClientValidation.validateUpdateClient,
     search: ClientValidation.validateClientSearch,
+  },
+};
+
+export const Visa = {
+  schemas: {
+    create: VisaValidation.CreateVisaSchema,
+    update: VisaValidation.UpdateVisaSchema,
+    search: VisaValidation.SearchVisaSchema,
+    id: VisaValidation.VisaIdSchema,
+  },
+  validate: {
+    create: VisaValidation.validateCreateVisa,
+    update: VisaValidation.validateUpdateVisa,
+    search: VisaValidation.validateVisaSearch,
+    id: VisaValidation.validateVisaId,
   },
 };
 

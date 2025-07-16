@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
-import { z } from 'zod';
 import { User as UserValidation } from '../utils/validations/index.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 import { ENV } from '../configs/index.js';

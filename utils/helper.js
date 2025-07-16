@@ -24,14 +24,42 @@ export const formatZodErrors = zodError => {
 
   errorArray.forEach(err => {
     const fieldName = err.path ? err.path.join('.') : 'general';
-    // Map Zod's default "invalid_type" error to our custom message
-    if (
-      err.code === 'invalid_type' &&
-      err.message &&
-      err.message.includes('expected string, received undefined')
+
+    // Handle different types of validation errors with user-friendly messages
+    if (err.code === 'invalid_type') {
+      // Check if the field is required (received undefined)
+      if (
+        err.message &&
+        (err.message.includes('received undefined') ||
+          err.message.includes('received null'))
+      ) {
+        errors[fieldName] = VALIDATION_MESSAGES.REQUIRED;
+      } else {
+        errors[fieldName] = err.message || 'Invalid value';
+      }
+    } else if (
+      err.code === 'invalid_enum_value' ||
+      err.code === 'invalid_value'
     ) {
+      // Handle enum validation errors - if received undefined, it's required
+      if (err.received === undefined || err.received === null) {
+        errors[fieldName] = VALIDATION_MESSAGES.REQUIRED;
+      } else {
+        errors[fieldName] = err.message || 'Invalid value';
+      }
+    } else if (err.code === 'invalid_union') {
+      // Handle union validation errors (like our client_id field)
+      errors[fieldName] = VALIDATION_MESSAGES.REQUIRED;
+    } else if (
+      err.message &&
+      (err.message.includes('is required') ||
+        err.message.includes('Required') ||
+        err.message.includes('required'))
+    ) {
+      // Map any "required" error message to the standard format
       errors[fieldName] = VALIDATION_MESSAGES.REQUIRED;
     } else {
+      // Use custom error messages if available, otherwise use the Zod message
       errors[fieldName] = err.message || 'Invalid value';
     }
   });
