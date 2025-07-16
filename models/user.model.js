@@ -82,49 +82,10 @@ const User = sequelize.define(
         },
       },
     },
-    nationality: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      validate: {
-        len: {
-          args: [2, 50],
-          msg: VALIDATION_MESSAGES.USER.NATIONALITY.INVALID,
-        },
-      },
-    },
-    date_of_birth: {
-      type: DataTypes.DATEONLY,
-      allowNull: true,
-      validate: {
-        isDate: {
-          msg: VALIDATION_MESSAGES.USER.DOB.INVALID,
-        },
-        isBefore: {
-          args: new Date().toISOString().split('T')[0],
-          msg: VALIDATION_MESSAGES.USER.DOB.FUTURE_DATE,
-        },
-      },
-      field: 'date_of_birth',
-    },
-    passport_number: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-      validate: {
-        len: {
-          args: [6, 20],
-          msg: VALIDATION_MESSAGES.USER.PASSPORT_NUMBER.TOO_SHORT,
-        },
-        is: {
-          args: /^[A-Z0-9]+$/,
-          msg: VALIDATION_MESSAGES.USER.PASSPORT_NUMBER.INVALID,
-        },
-      },
-      field: 'passport_number',
-    },
     role: {
-      type: DataTypes.ENUM('client', 'admin'),
+      type: DataTypes.ENUM('admin', 'user'),
       allowNull: false,
-      defaultValue: 'client',
+      defaultValue: 'user',
       validate: {
         notNull: {
           msg: VALIDATION_MESSAGES.USER.ROLE.REQUIRED,

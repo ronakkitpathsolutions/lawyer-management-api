@@ -19,7 +19,7 @@ export const VALIDATION_MESSAGES = {
     },
     ROLE: {
       REQUIRED: 'Role is required',
-      INVALID: 'Role must be a valid role',
+      INVALID: 'Role must be admin or user',
       NOT_FOUND: 'Role not found',
     },
     EMAIL: {
@@ -121,6 +121,90 @@ export const VALIDATION_MESSAGES = {
     NOT_FOUND: 'Resource not found',
     CONFLICT: 'Resource conflict',
     RATE_LIMIT: 'Too many requests',
+  },
+
+  // Client validation messages
+  CLIENT: {
+    NAME: {
+      REQUIRED: 'Name is required',
+      TOO_SHORT: 'Name must be at least 2 characters long',
+      TOO_LONG: 'Name must not exceed 100 characters',
+      EMPTY: 'Name cannot be empty',
+    },
+    FAMILY_NAME: {
+      REQUIRED: 'Family name is required',
+      TOO_SHORT: 'Family name must be at least 2 characters long',
+      TOO_LONG: 'Family name must not exceed 100 characters',
+      EMPTY: 'Family name cannot be empty',
+    },
+    EMAIL: {
+      REQUIRED: 'Email is required',
+      INVALID: 'Must be a valid email address',
+      TOO_LONG: 'Email must not exceed 150 characters',
+      ALREADY_EXISTS: 'Email address already in use',
+      NOT_FOUND: 'Email address not found',
+    },
+    PASSPORT_NUMBER: {
+      REQUIRED: 'Passport number is required',
+      INVALID: 'Must be a valid passport number (alphanumeric only)',
+      TOO_SHORT: 'Passport number must be at least 6 characters long',
+      TOO_LONG: 'Passport number must not exceed 20 characters',
+      ALREADY_EXISTS: 'Passport number already exists',
+      NOT_FOUND: 'Passport number not found',
+    },
+    NATIONALITY: {
+      REQUIRED: 'Nationality is required',
+      INVALID: 'Must be a valid nationality (2-50 characters)',
+      NOT_FOUND: 'Nationality not found',
+    },
+    DOB: {
+      REQUIRED: 'Date of birth is required',
+      INVALID: 'Must be a valid date (YYYY-MM-DD)',
+      FUTURE_DATE: 'Date of birth cannot be in the future',
+      TOO_OLD: 'Invalid date of birth',
+    },
+    AGE: {
+      REQUIRED: 'Age is required',
+      TOO_YOUNG: 'Client must be at least 18 years old',
+      TOO_OLD: 'Age cannot exceed 120 years',
+      INVALID: 'Age must be a valid number',
+    },
+    PHONE_NUMBER: {
+      REQUIRED: 'Phone number is required',
+      INVALID: 'Must be a valid phone number',
+      TOO_SHORT: 'Phone number must be at least 10 digits long',
+      TOO_LONG: 'Phone number must not exceed 15 digits',
+      NOT_FOUND: 'Phone number not found',
+    },
+    CURRENT_ADDRESS: {
+      REQUIRED: 'Current address is required',
+      TOO_SHORT: 'Current address must be at least 10 characters long',
+      TOO_LONG: 'Current address must not exceed 500 characters',
+      INVALID_LENGTH: 'Current address must be between 10-500 characters',
+    },
+    ADDRESS_IN_THAILAND: {
+      TOO_LONG: 'Thailand address must not exceed 500 characters',
+    },
+    WHATSAPP: {
+      INVALID: 'Must be a valid WhatsApp number',
+      INVALID_LENGTH: 'WhatsApp number must be between 10-15 digits',
+    },
+    LINE: {
+      INVALID_LENGTH: 'LINE ID must be between 3-50 characters',
+    },
+    IS_ACTIVE: {
+      INVALID: 'is_active must be a boolean value',
+      REQUIRED: 'is_active status is required',
+    },
+    GENERAL: {
+      NOT_FOUND: 'Client not found',
+      ALREADY_EXISTS: 'Client already exists',
+      CREATION_FAILED: 'Failed to create client',
+      UPDATE_FAILED: 'Failed to update client',
+      DELETE_FAILED: 'Failed to delete client',
+      UNAUTHORIZED: 'Unauthorized access',
+      FORBIDDEN: 'Access forbidden - Admin access required',
+    },
   },
 
   // Common validation messages

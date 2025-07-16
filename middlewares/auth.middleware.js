@@ -2,7 +2,7 @@ import User from '../models/user.model.js';
 import { createValidationMiddleware } from './validation.middleware.js';
 import { verifyToken } from '../utils/jwt.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
-import { asyncHandler } from '../utils/helper.js';
+import { asyncHandler, createApiResponse } from '../utils/helper.js';
 
 // Auth validation middlewares
 export const loginValidationMiddleware = createValidationMiddleware(
@@ -96,3 +96,33 @@ export const authenticateToken = asyncHandler(async (req, res, next) => {
   req.token = token;
   next();
 }, 'Authentication error');
+
+// Login role validation middleware
+export const validateLoginRole = asyncHandler(async (req, res, next) => {
+  const { email } = req.validatedData;
+
+  // Find user by email
+  const user = await User.findByEmail(email);
+
+  if (!user) {
+    return res
+      .status(401)
+      .json(createApiResponse(false, VALIDATION_MESSAGES.AUTH.LOGIN.FAILED));
+  }
+
+  // Check if user role is allowed to login (only admin and user)
+  if (!['admin', 'user'].includes(user.role)) {
+    return res
+      .status(403)
+      .json(
+        createApiResponse(
+          false,
+          'Access denied. Only admin and user accounts can login.'
+        )
+      );
+  }
+
+  // Add user to request for next middleware/controller
+  req.foundUser = user;
+  next();
+}, 'Role validation failed');

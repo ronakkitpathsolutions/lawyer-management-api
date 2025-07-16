@@ -28,13 +28,14 @@ const UserValidationSchema = z.object({
     .regex(
       /^[\+]?[1-9][\d]{0,15}$/,
       VALIDATION_MESSAGES.USER.PHONE_NUMBER.INVALID
-    ),
+    )
+    .optional(),
   is_active: z.boolean().optional().default(false),
   role: z
     .string()
     .min(1, VALIDATION_MESSAGES.USER.ROLE.REQUIRED)
     .refine(
-      val => ['client', 'admin'].includes(val),
+      val => ['admin', 'user'].includes(val),
       VALIDATION_MESSAGES.USER.ROLE.INVALID
     ),
   profile: z
@@ -42,26 +43,6 @@ const UserValidationSchema = z.object({
     .url(VALIDATION_MESSAGES.USER.PROFILE.INVALID_URL)
     .max(500, VALIDATION_MESSAGES.USER.PROFILE.TOO_LONG)
     .optional(),
-  nationality: z
-    .string()
-    .min(2, VALIDATION_MESSAGES.USER.NATIONALITY.INVALID)
-    .max(50, VALIDATION_MESSAGES.USER.NATIONALITY.INVALID)
-    .trim()
-    .refine(
-      val => val.length > 0,
-      VALIDATION_MESSAGES.USER.NATIONALITY.NOT_FOUND
-    )
-    .optional(),
-  date_of_birth: z
-    .string()
-    .min(10, VALIDATION_MESSAGES.USER.DOB.REQUIRED)
-    .max(10, VALIDATION_MESSAGES.USER.DOB.REQUIRED)
-    .refine(
-      val => /^\d{4}-\d{2}-\d{2}$/.test(val),
-      VALIDATION_MESSAGES.USER.DOB.INVALID
-    )
-    .optional(),
-  passport_number: z.string().optional(),
 });
 
 // Schema for user creation (all required fields)
@@ -147,7 +128,7 @@ export const RegisterUserSchema = z
       })
       .min(1, VALIDATION_MESSAGES.USER.ROLE.REQUIRED)
       .refine(
-        val => ['client', 'admin'].includes(val),
+        val => ['admin', 'user'].includes(val),
         VALIDATION_MESSAGES.USER.ROLE.INVALID
       ),
     is_active: z.boolean().optional().default(false), // Default to false for new registrations
@@ -221,16 +202,8 @@ export const UpdateProfileSchema = z.object({
     .regex(
       /^[\+]?[1-9][\d]{0,15}$/,
       VALIDATION_MESSAGES.USER.PHONE_NUMBER.INVALID
-    ),
-  nationality: z
-    .string()
-    .min(2, VALIDATION_MESSAGES.USER.NATIONALITY.INVALID)
-    .max(50, VALIDATION_MESSAGES.USER.NATIONALITY.INVALID)
-    .trim()
-    .refine(
-      val => val.length > 0,
-      VALIDATION_MESSAGES.USER.NATIONALITY.NOT_FOUND
-    ),
+    )
+    .optional(),
 });
 
 export const validateCreateUser = data => CreateUserSchema.safeParse(data);

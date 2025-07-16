@@ -40,18 +40,12 @@ import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 
 export const login = asyncHandler(async (req, res) => {
   // Get validated data from middleware
-  const { email, password } = req.validatedData;
+  const { password } = req.validatedData;
 
-  // 2. Find user by email
-  const user = await User.findByEmail(email);
+  // Get user from role validation middleware
+  const user = req.foundUser;
 
-  if (!user) {
-    return res
-      .status(401)
-      .json(createApiResponse(false, VALIDATION_MESSAGES.AUTH.LOGIN.FAILED));
-  }
-
-  // 3. Check if user is active
+  // 4. Check if user is active
   if (!user.is_active) {
     return res
       .status(403)
@@ -63,7 +57,7 @@ export const login = asyncHandler(async (req, res) => {
       );
   }
 
-  // 4. Validate password
+  // 5. Validate password
   const isPasswordValid = await user.validatePassword(password);
 
   if (!isPasswordValid) {
@@ -72,7 +66,7 @@ export const login = asyncHandler(async (req, res) => {
       .json(createApiResponse(false, VALIDATION_MESSAGES.AUTH.LOGIN.FAILED));
   }
 
-  // 5. Generate JWT token
+  // 6. Generate JWT token
   const tokenPayload = {
     id: user.id,
     email: user.email,
@@ -82,7 +76,7 @@ export const login = asyncHandler(async (req, res) => {
 
   const token = generateToken(tokenPayload);
 
-  // 6. Return success response with token
+  // 7. Return success response with token
   return res
     .status(200)
     .json(createApiResponse(true, 'Login successful', token));
@@ -90,7 +84,6 @@ export const login = asyncHandler(async (req, res) => {
 
 export const register = asyncHandler(async (req, res) => {
   // Get validated data from middleware
-  console.log('req.validatedData', req.validatedData);
   const { email } = req.validatedData;
   // Check if user already exists
   const existingUser = await User.findByEmail(email);

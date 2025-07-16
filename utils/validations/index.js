@@ -1,4 +1,5 @@
 import * as UserValidation from './user.validation.js';
+import * as ClientValidation from './client.validation.js';
 import * as CommonValidation from './common.validation.js';
 
 export const User = {
@@ -21,6 +22,19 @@ export const User = {
     forgotPassword: UserValidation.validateForgotPassword,
     resetPassword: UserValidation.validateResetPassword,
     updateProfile: UserValidation.validateUpdateProfile,
+  },
+};
+
+export const Client = {
+  schemas: {
+    create: ClientValidation.CreateClientSchema,
+    update: ClientValidation.UpdateClientSchema,
+    search: ClientValidation.ClientSearchSchema,
+  },
+  validate: {
+    create: ClientValidation.validateCreateClient,
+    update: ClientValidation.validateUpdateClient,
+    search: ClientValidation.validateClientSearch,
   },
 };
 

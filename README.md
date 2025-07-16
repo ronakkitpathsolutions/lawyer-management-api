@@ -1,10 +1,13 @@
 # Lawyer Dashboard API
 
-A Node.js REST API server with user authentication and CRUD operations built with Express.js, Sequelize ORM, and PostgreSQL.
+A Node.js REST API server with separated User and Client management, authentication, and CRUD operations built with Express.js, Sequelize ORM, and PostgreSQL.
 
 ## Features
 
-- **User Authentication**: Registration, login, email verification, password reset
+- **Separated User and Client Models**: Users (admin/user) for authentication, Clients for data management
+- **Role-Based Access Control**: Only admin and user roles can login; clients are managed by admins
+- **User Authentication**: Registration, login, email verification, password reset for admin/user roles
+- **Client Management**: Complete CRUD operations for client data (admin only)
 - **JWT Token-based Authentication**: Secure API access with JWT tokens
 - **Input Validation**: Comprehensive validation using Zod schemas
 - **Password Security**: Bcrypt hashing with configurable salt rounds
@@ -12,6 +15,25 @@ A Node.js REST API server with user authentication and CRUD operations built wit
 - **Database**: PostgreSQL with Sequelize ORM
 - **Error Handling**: Centralized error handling and validation
 - **CORS Support**: Cross-origin resource sharing enabled
+
+## Models
+
+### User Model
+
+- **Purpose**: Authentication and system access
+- **Roles**: admin, user (client role removed)
+- **Fields**: id, name, email, password, phone_number, is_active, role, refresh_token, timestamps
+- **Removed Fields**: passport_number, nationality, date_of_birth (moved to Client model)
+
+### Client Model
+
+- **Purpose**: Client data management (managed by admins)
+- **Fields**:
+  - Basic Info: id, name, family_name, email
+  - Identity: passport_number, nationality, date_of_birth, age
+  - Contact: phone_number, current_address, address_in_thailand (optional)
+  - Social: whatsapp (optional), line (optional)
+  - Status: is_active, created_by, timestamps
 
 ## Tech Stack
 
@@ -69,7 +91,19 @@ SMTP_PASS=your_email_password
 
 4. Set up your PostgreSQL database and update the connection details in your `.env` file.
 
-5. Run the server:
+5. Run database migration to update schema:
+
+```bash
+npm run migrate-schema
+```
+
+6. Create an admin user:
+
+```bash
+npm run create-admin
+```
+
+7. Run the server:
 
 ```bash
 # Development mode with auto-restart
@@ -89,7 +123,7 @@ The server will start on `http://localhost:3000` (or the port specified in your 
 http://localhost:3000/api
 ```
 
-### Authentication Endpoints
+### Authentication Endpoints (For Admin and User roles only)
 
 #### 1. Register User
 
@@ -102,12 +136,13 @@ http://localhost:3000/api
   "email": "john@example.com",
   "password": "SecurePass123!",
   "confirmPassword": "SecurePass123!",
-  "role": "client"
+  "role": "user"
 }
 ```
 
 - **Response**: JWT token and success message
 - **Note**: User account starts as inactive until email verification
+- **Allowed Roles**: admin, user (client role removed)
 
 #### 2. Login
 
@@ -122,7 +157,7 @@ http://localhost:3000/api
 ```
 
 - **Response**: JWT token on successful login
-- **Note**: Only active users can login
+- **Note**: Only active users with admin or user roles can login
 
 #### 3. Verify Email
 
@@ -166,10 +201,79 @@ http://localhost:3000/api
 }
 ```
 
+### Client Management Endpoints (Admin Only)
+
+All client endpoints require admin authentication.
+
+#### 1. Create Client
+
+- **URL**: `POST /api/clients`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+- **Body**:
+
+```json
+{
+  "name": "Jane",
+  "family_name": "Smith",
+  "email": "jane.smith@example.com",
+  "passport_number": "AB123456",
+  "nationality": "American",
+  "date_of_birth": "1990-05-15",
+  "phone_number": "+1234567890",
+  "current_address": "123 Main St, City, Country",
+  "address_in_thailand": "456 Thai St, Bangkok, Thailand",
+  "whatsapp": "+1234567890",
+  "line": "jane_line_id"
+}
+```
+
+#### 2. Get All Clients
+
+- **URL**: `GET /api/clients`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+- **Query Parameters**:
+  - `page`: Page number (default: 1)
+  - `limit`: Items per page (default: 10, max: 100)
+  - `search`: Search term (searches name, family_name, email, passport_number, nationality)
+  - `sortBy`: Sort field (default: createdAt)
+  - `sortOrder`: ASC or DESC (default: DESC)
+  - `nationality`: Filter by nationality
+  - `is_active`: Filter by active status (true/false)
+  - `created_by`: Filter by creator user ID
+
+#### 3. Get Client by ID
+
+- **URL**: `GET /api/clients/:id`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+
+#### 4. Update Client
+
+- **URL**: `PUT /api/clients/:id`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+- **Body**: Same as create client (all fields optional)
+
+#### 5. Delete Client
+
+- **URL**: `DELETE /api/clients/:id`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+
+#### 6. Toggle Client Status
+
+- **URL**: `PATCH /api/clients/:id/toggle-status`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+- **Description**: Toggles client's active/inactive status
+
+#### 7. Get Client Statistics
+
+- **URL**: `GET /api/clients/stats`
+- **Headers**: `Authorization: Bearer <admin_jwt_token>`
+- **Response**: Total, active, inactive, recent clients and nationality breakdown
+
 ## User Roles
 
-- **client**: Regular user with basic access
-- **admin**: Administrative user with elevated permissions
+- **admin**: Can manage clients and all system operations
+- **user**: Standard user with basic access (no client management)
+- **Note**: Client role removed - clients are now managed as data records by admins
 
 ## Validation Rules
 
@@ -178,8 +282,24 @@ http://localhost:3000/api
 - **Name**: 2-100 characters, required
 - **Email**: Valid email format, unique, required
 - **Password**: Minimum 6 characters, required
-- **Role**: Must be either "client" or "admin", required
+- **Role**: Must be either "admin" or "user", required
 - **Confirm Password**: Must match password, required
+- **Phone Number**: 10-15 digits, optional
+
+### Client Creation
+
+- **Name**: 2-100 characters, required
+- **Family Name**: 2-100 characters, required
+- **Email**: Valid email format, unique, required
+- **Passport Number**: 6-20 alphanumeric characters, unique, required
+- **Nationality**: 2-50 characters, required
+- **Date of Birth**: Valid date (YYYY-MM-DD), must be 18+ years old, required
+- **Age**: Calculated automatically from date of birth
+- **Phone Number**: 10-15 digits, required
+- **Current Address**: 10-500 characters, required
+- **Address in Thailand**: Up to 500 characters, optional
+- **WhatsApp**: 10-15 digits, optional
+- **LINE**: 3-50 characters, optional
 
 ### User Login
 
@@ -212,6 +332,9 @@ Authorization: Bearer <your_jwt_token>
 
 - `npm run dev`: Start development server with auto-restart
 - `npm start`: Start production server
+- `npm run migrate-schema`: Run database schema migration
+- `npm run create-admin`: Create default admin user
+- `npm run sync-db`: Sync database (legacy)
 
 ### Project Structure
 

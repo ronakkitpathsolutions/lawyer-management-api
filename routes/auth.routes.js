@@ -16,11 +16,12 @@ import {
   registerValidationMiddleware,
   resendVerificationValidationMiddleware,
   resetPasswordValidationMiddleware,
+  validateLoginRole,
 } from '../middlewares/auth.middleware.js';
 
 const authRoutes = express.Router();
 
-authRoutes.post('/login', loginValidationMiddleware, login);
+authRoutes.post('/login', loginValidationMiddleware, validateLoginRole, login);
 authRoutes.post('/register', registerValidationMiddleware, register);
 authRoutes.get('/verify', verifyUser);
 authRoutes.post(
