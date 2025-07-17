@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import VALIDATION_MESSAGES from './constants/messages.js';
+import fs from 'fs';
+import path from 'path';
 
 export const formatZodErrors = zodError => {
   const errors = {};
@@ -259,3 +261,54 @@ export const asyncHandler = (
     }
   };
 };
+
+/**
+ * Delete a file from the file system
+ * @param {string} filePath - The path to the file to delete
+ * @returns {boolean} - True if file was deleted successfully, false otherwise
+ */
+export const deleteFileFromSystem = filePath => {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log(`Successfully deleted file: ${filePath}`);
+      return true;
+    }
+    console.log(`File not found: ${filePath}`);
+    return false;
+  } catch (error) {
+    console.error(`Error deleting file ${filePath}:`, error);
+    return false;
+  }
+};
+
+/**
+ * Delete multiple document files from specified fields of a record
+ * @param {Object} record - The database record containing document paths
+ * @param {Array} documentFields - Array of field names that contain document paths
+ * @returns {number} - Number of files successfully deleted
+ */
+export const deleteDocumentFiles = (record, documentFields = []) => {
+  let deletedCount = 0;
+
+  documentFields.forEach(field => {
+    if (record[field]) {
+      const absolutePath = path.resolve(record[field]);
+      if (deleteFileFromSystem(absolutePath)) {
+        deletedCount++;
+      }
+    }
+  });
+
+  return deletedCount;
+};
+
+/**
+ * Property document fields that can contain uploaded files
+ */
+export const PROPERTY_DOCUMENT_FIELDS = [
+  'land_title_document',
+  'house_title_document',
+  'house_registration_book',
+  'land_lease_agreement',
+];

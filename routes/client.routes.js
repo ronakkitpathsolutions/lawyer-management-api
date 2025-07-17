@@ -17,32 +17,37 @@ import {
 } from '../middlewares/client.middleware.js';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
 
-const router = express.Router();
+const clientRoutes = express.Router();
 
 // Apply authentication and admin role check to all routes
-router.use(authenticateToken);
-router.use(requireAdminRole);
+clientRoutes.use(authenticateToken);
+clientRoutes.use(requireAdminRole);
 
 // Routes for client management
 // GET /api/clients/stats - Get client statistics
-router.get('/stats', getClientStats);
+clientRoutes.get('/stats', getClientStats);
 
 // GET /api/clients - Get all clients with pagination and search
-router.get('/', validateClientSearch, getAllClients);
+clientRoutes.get('/', validateClientSearch, getAllClients);
 
 // POST /api/clients - Create a new client
-router.post('/create', validateCreateClient, createClient);
+clientRoutes.post('/create', validateCreateClient, createClient);
 
 // GET /api/clients/:id - Get client by ID
-router.get('/:id', validateClientId, getClientById);
+clientRoutes.get('/:id', validateClientId, getClientById);
 
 // PUT /api/clients/:id - Update client
-router.patch('/:id', validateClientId, validateUpdateClient, updateClient);
+clientRoutes.patch(
+  '/:id',
+  validateClientId,
+  validateUpdateClient,
+  updateClient
+);
 
 // DELETE /api/clients/:id - Delete client
-router.delete('/:id', validateClientId, deleteClient);
+clientRoutes.delete('/:id', validateClientId, deleteClient);
 
 // PATCH /api/clients/:id/toggle-status - Toggle client active status
-router.patch('/:id/toggle-status', validateClientId, toggleClientStatus);
+clientRoutes.patch('/:id/toggle-status', validateClientId, toggleClientStatus);
 
-export default router;
+export default clientRoutes;

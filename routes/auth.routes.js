@@ -2,6 +2,7 @@ import express from 'express';
 import {
   changePassword,
   forgotPassword,
+  getProfile,
   login,
   register,
   resendVerification,
@@ -45,5 +46,6 @@ authRoutes.post(
   changePasswordValidationMiddleware,
   changePassword
 );
+authRoutes.get('/profile', authenticateToken, getProfile);
 
 export default authRoutes;

@@ -291,3 +291,25 @@ export const resendVerification = asyncHandler(async (req, res) => {
     .status(200)
     .json(createApiResponse(true, 'Verification email sent successfully'));
 }, 'Failed to resend verification');
+
+// Get user profile for authenticated user
+export const getProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  // Find user by id and get full profile
+  const user = await User.findByPk(userId, {
+    attributes: { exclude: ['password', 'refresh_token'] }, // Exclude sensitive data
+  });
+
+  if (!user) {
+    return res
+      .status(404)
+      .json(
+        createApiResponse(false, VALIDATION_MESSAGES.USER.GENERAL.NOT_FOUND)
+      );
+  }
+
+  return res
+    .status(200)
+    .json(createApiResponse(true, 'Profile retrieved successfully', user));
+}, 'Failed to get profile');

@@ -270,6 +270,177 @@ export const VALIDATION_MESSAGES = {
     },
   },
 
+  // Property validation messages
+  PROPERTY: {
+    CLIENT_ID: {
+      REQUIRED: 'Client ID is required',
+      INVALID: 'Client ID must be a valid integer',
+      NOT_FOUND: 'Client not found',
+    },
+    AGENT_NAME: {
+      REQUIRED: 'Agent name is required',
+      TOO_SHORT: 'Agent name must be at least 2 characters long',
+      TOO_LONG: 'Agent name must not exceed 100 characters',
+      INVALID: 'Agent name contains invalid characters',
+    },
+    BROKER_COMPANY: {
+      REQUIRED: 'Broker company is required',
+      TOO_SHORT: 'Broker company must be at least 2 characters long',
+      TOO_LONG: 'Broker company must not exceed 100 characters',
+      INVALID: 'Broker company contains invalid characters',
+    },
+    TRANSACTION_TYPE: {
+      REQUIRED: 'Transaction type is required',
+      INVALID: 'Transaction type must be one of: buy, sell, rent',
+    },
+    PROPERTY_TYPE: {
+      REQUIRED: 'Property type is required',
+      INVALID: 'Property type must be one of: house, condo, land, commercial',
+    },
+    RESERVATION_DATE: {
+      REQUIRED: 'Reservation date is required',
+      INVALID: 'Reservation date must be a valid date',
+    },
+    INTENDED_CLOSING_DATE: {
+      REQUIRED: 'Intended closing date is required',
+      INVALID: 'Intended closing date must be a valid date',
+    },
+    HANDOVER_DATE: {
+      REQUIRED: 'Handover date is required',
+      INVALID: 'Handover date must be a valid date',
+    },
+    PROPERTY_NAME: {
+      REQUIRED: 'Property name is required',
+      TOO_SHORT: 'Property name must be at least 2 characters long',
+      TOO_LONG: 'Property name must not exceed 100 characters',
+      INVALID: 'Property name contains invalid characters',
+    },
+    SELLING_PRICE: {
+      REQUIRED: 'Selling price is required',
+      INVALID: 'Selling price must be a valid number',
+      MUST_BE_POSITIVE: 'Selling price must be a positive number',
+    },
+    DEPOSIT: {
+      REQUIRED: 'Deposit amount is required',
+      INVALID: 'Deposit must be a valid number',
+      MUST_BE_POSITIVE: 'Deposit must be a positive number',
+    },
+    INTERMEDIARY_PAYMENT: {
+      REQUIRED: 'Intermediary payment is required',
+      INVALID: 'Intermediary payment must be a valid number',
+      MUST_BE_POSITIVE: 'Intermediary payment must be a positive number',
+    },
+    CLOSING_PAYMENT: {
+      REQUIRED: 'Closing payment is required',
+      INVALID: 'Closing payment must be a valid number',
+      MUST_BE_POSITIVE: 'Closing payment must be a positive number',
+    },
+    ACCEPTABLE_METHOD_OF_PAYMENT: {
+      REQUIRED: 'Acceptable method of payment is required',
+      INVALID:
+        'Acceptable method of payment must be one of: direct_transfer, bank_transfer, cash',
+    },
+    PLACE_OF_PAYMENT: {
+      REQUIRED: 'Place of payment is required',
+      TOO_SHORT: 'Place of payment must be at least 2 characters long',
+      TOO_LONG: 'Place of payment must not exceed 100 characters',
+      INVALID: 'Place of payment contains invalid characters',
+    },
+    PROPERTY_CONDITION: {
+      REQUIRED: 'Property condition is required',
+      INVALID:
+        'Property condition must be one of: new, good, needs_renovation, poor',
+    },
+    HOUSE_WARRANTY: {
+      REQUIRED: 'House warranty is required',
+      INVALID: 'House warranty must be a boolean value (true/false)',
+    },
+    FURNITURE_INCLUDED: {
+      REQUIRED: 'Furniture included status is required',
+      INVALID: 'Furniture included must be one of: yes, no, negotiable',
+    },
+    // cost sharing
+    TRANSFER_FEE: {
+      REQUIRED: 'Transfer fee is required',
+      INVALID: 'Transfer fee must be a valid number',
+      MUST_BE_POSITIVE: 'Transfer fee must be a positive number',
+    },
+    WITHHOLDING_TAX: {
+      REQUIRED: 'Withholding tax is required',
+      INVALID: 'Withholding tax must be a valid number',
+      MUST_BE_POSITIVE: 'Withholding tax must be a positive number',
+    },
+    BUSINESS_TAX: {
+      REQUIRED: 'Business tax is required',
+      INVALID: 'Business tax must be a valid number',
+      MUST_BE_POSITIVE: 'Business tax must be a positive number',
+    },
+    LEASE_REGISTRATION_FEE: {
+      REQUIRED: 'Lease registration fee is required',
+      INVALID: 'Lease registration fee must be a valid number',
+      MUST_BE_POSITIVE: 'Lease registration fee must be a positive number',
+    },
+    MORTGAGE_FEE: {
+      REQUIRED: 'Mortgage fee is required',
+      INVALID: 'Mortgage fee must be a valid number',
+      MUST_BE_POSITIVE: 'Mortgage fee must be a positive number',
+    },
+    USUFRUCT_REGISTRATION_FEE: {
+      REQUIRED: 'Usufruct registration fee is required',
+      INVALID: 'Usufruct registration fee must be a valid number',
+      MUST_BE_POSITIVE: 'Usufruct registration fee must be a positive number',
+    },
+    SERVITUDE_REGISTRATION_FEE: {
+      REQUIRED: 'Servitude registration fee is required',
+      INVALID: 'Servitude registration fee must be a valid number',
+      MUST_BE_POSITIVE: 'Servitude registration fee must be a positive number',
+    },
+    DECLARED_LAND_OFFICE_PRICE: {
+      REQUIRED: 'Declared land office price is required',
+      INVALID: 'Declared land office price must be a valid number',
+      MUST_BE_POSITIVE: 'Declared land office price must be a positive number',
+    },
+    // documentation attachment
+    LAND_TITLE: {
+      REQUIRED: 'Land title document is required',
+      INVALID: 'Land title must be a valid URL',
+      TOO_LONG: 'Land title URL must not exceed 500 characters',
+    },
+    LAND_TITLE_DOCUMENT: {
+      REQUIRED: 'Land title document is required',
+      INVALID: 'Land title document must be a valid URL',
+      TOO_LONG: 'Land title document URL must not exceed 500 characters',
+    },
+    HOUSE_TITLE: {
+      REQUIRED: 'House title document is required',
+      INVALID: 'House title must be a valid URL',
+      TOO_LONG: 'House title URL must not exceed 500 characters',
+    },
+    HOUSE_TITLE_DOCUMENT: {
+      REQUIRED: 'House title document is required',
+      INVALID: 'House title document must be a valid URL',
+      TOO_LONG: 'House title document URL must not exceed 500 characters',
+    },
+    HOUSE_REGISTRATION_BOOK: {
+      REQUIRED: 'House registration book is required',
+      INVALID: 'House registration book must be a valid URL',
+      TOO_LONG: 'House registration book URL must not exceed 500 characters',
+    },
+    LAND_LEASE_AGREEMENT: {
+      REQUIRED: 'Land lease agreement is required',
+      INVALID: 'Land lease agreement must be a valid URL',
+      TOO_LONG: 'Land lease agreement URL must not exceed 500 characters',
+    },
+    GENERAL: {
+      NOT_FOUND: 'Property record not found',
+      ALREADY_EXISTS: 'Property record already exists',
+      CREATION_FAILED: 'Failed to create property record',
+      UPDATE_FAILED: 'Failed to update property record',
+      DELETE_FAILED: 'Failed to delete property record',
+      UNAUTHORIZED: 'Unauthorized access',
+      FORBIDDEN: 'Access forbidden - Admin access required',
+    },
+  },
   // Common validation messages
   COMMON: {
     ID: {
