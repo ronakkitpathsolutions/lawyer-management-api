@@ -101,6 +101,16 @@ const User = sequelize.define(
         },
       },
     },
+    profile: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+      validate: {
+        len: {
+          args: [0, 500],
+          msg: VALIDATION_MESSAGES.USER.PROFILE.TOO_LONG,
+        },
+      },
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,

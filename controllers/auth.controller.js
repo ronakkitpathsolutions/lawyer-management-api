@@ -36,6 +36,7 @@ import User from '../models/user.model.js';
 import { generateToken } from '../utils/jwt.js';
 import { generateRefreshToken } from '../utils/refresh-token.js';
 import { sendEmail } from '../utils/mailer.js';
+import { deleteFile } from '../utils/multer.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 
 export const login = asyncHandler(async (req, res) => {
@@ -313,3 +314,49 @@ export const getProfile = asyncHandler(async (req, res) => {
     .status(200)
     .json(createApiResponse(true, 'Profile retrieved successfully', user));
 }, 'Failed to get profile');
+
+// Update user profile for authenticated user
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { name, phone_number, profile } = req.validatedData;
+  const userId = req.user.id;
+
+  // Find user by id
+  const user = await User.findByPk(userId);
+  if (!user) {
+    return res
+      .status(404)
+      .json(
+        createApiResponse(false, VALIDATION_MESSAGES.USER.GENERAL.NOT_FOUND)
+      );
+  }
+
+  // If a new profile image is being uploaded and user has an old profile image, delete it
+  if (profile && user.profile && user.profile !== profile) {
+    try {
+      // Convert the database path to file system path for deletion
+      const oldImagePath = user.profile.replace('/uploads/', './uploads/');
+      await deleteFile(oldImagePath);
+    } catch (error) {
+      console.warn('Failed to delete old profile image:', error.message);
+      // Continue with update even if old image deletion fails
+    }
+  }
+
+  // Update only the fields that were provided
+  const updateData = {};
+  if (name !== undefined) updateData.name = name;
+  if (phone_number !== undefined) updateData.phone_number = phone_number;
+  if (profile !== undefined) updateData.profile = profile;
+
+  // Update user profile
+  await user.update(updateData);
+
+  // Return updated user profile (excluding sensitive data)
+  const updatedUser = await User.findByPk(userId, {
+    attributes: { exclude: ['password', 'refresh_token'] },
+  });
+
+  return res
+    .status(200)
+    .json(createApiResponse(true, 'Profile updated successfully', updatedUser));
+}, 'Failed to update profile');

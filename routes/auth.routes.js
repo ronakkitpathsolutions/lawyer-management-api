@@ -7,6 +7,7 @@ import {
   register,
   resendVerification,
   resetPassword,
+  updateProfile,
   verifyUser,
 } from '../controllers/auth.controller.js';
 import {
@@ -17,6 +18,8 @@ import {
   registerValidationMiddleware,
   resendVerificationValidationMiddleware,
   resetPasswordValidationMiddleware,
+  updateProfileValidationMiddleware,
+  updateProfileWithImageMiddleware,
   validateLoginRole,
 } from '../middlewares/auth.middleware.js';
 
@@ -47,5 +50,11 @@ authRoutes.post(
   changePassword
 );
 authRoutes.get('/profile', authenticateToken, getProfile);
+authRoutes.put(
+  '/profile',
+  authenticateToken,
+  updateProfileWithImageMiddleware,
+  updateProfile
+);
 
 export default authRoutes;

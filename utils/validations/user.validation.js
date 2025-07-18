@@ -191,7 +191,6 @@ export const UpdateProfileSchema = z.object({
     .optional(),
   profile: z
     .string()
-    .url(VALIDATION_MESSAGES.USER.PROFILE.INVALID_URL)
     .max(500, VALIDATION_MESSAGES.USER.PROFILE.TOO_LONG)
     .optional(),
   phone_number: z
