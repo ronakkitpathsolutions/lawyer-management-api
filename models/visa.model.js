@@ -162,10 +162,37 @@ Visa.paginateWithSearch = async function ({
 
   // Add search conditions
   if (search) {
-    whereConditions[Op.or] = [
-      { existing_visa: { [Op.iLike]: `%${search}%` } },
-      { wished_visa: { [Op.iLike]: `%${search}%` } },
-    ];
+    // For ENUM fields, we need to filter the available values that match the search
+    const searchLower = search.toLowerCase();
+
+    const matchingExistingVisas = EXISTING_VISA.filter(visa =>
+      visa.toLowerCase().includes(searchLower)
+    );
+    const matchingWishedVisas = WISHED_VISA.filter(visa =>
+      visa.toLowerCase().includes(searchLower)
+    );
+
+    const searchConditions = [];
+
+    // Add exact matches for ENUM fields
+    if (matchingExistingVisas.length > 0) {
+      searchConditions.push({
+        existing_visa: { [Op.in]: matchingExistingVisas },
+      });
+    }
+
+    if (matchingWishedVisas.length > 0) {
+      searchConditions.push({ wished_visa: { [Op.in]: matchingWishedVisas } });
+    }
+
+    // If we have any matching conditions, use them
+    if (searchConditions.length > 0) {
+      whereConditions[Op.or] = searchConditions;
+    } else {
+      // If no ENUM values match the search, return empty result
+      // Add an impossible condition to ensure no records are returned
+      whereConditions[Op.and] = [{ id: { [Op.eq]: null } }];
+    }
   }
 
   // Add filter conditions
