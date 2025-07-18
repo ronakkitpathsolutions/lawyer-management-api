@@ -34,16 +34,7 @@ const Visa = sequelize.define(
     },
     existing_visa: {
       type: DataTypes.ENUM(...EXISTING_VISA),
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: VALIDATION_MESSAGES.VISA.EXISTING_VISA.REQUIRED,
-        },
-        isIn: {
-          args: [EXISTING_VISA],
-          msg: VALIDATION_MESSAGES.VISA.EXISTING_VISA.INVALID,
-        },
-      },
+      allowNull: true,
     },
     wished_visa: {
       type: DataTypes.ENUM(...WISHED_VISA),

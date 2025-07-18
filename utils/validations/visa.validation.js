@@ -22,10 +22,7 @@ const VisaValidationSchema = z.object({
         .int(VALIDATION_MESSAGES.VISA.CLIENT_ID.INVALID)
         .positive(VALIDATION_MESSAGES.VISA.CLIENT_ID.INVALID)
     ),
-  existing_visa: z.enum(EXISTING_VISA, {
-    required_error: VALIDATION_MESSAGES.VISA.EXISTING_VISA.REQUIRED,
-    invalid_type_error: VALIDATION_MESSAGES.VISA.EXISTING_VISA.INVALID,
-  }),
+  existing_visa: z.enum(EXISTING_VISA).optional().nullable(),
   wished_visa: z.enum(WISHED_VISA, {
     required_error: VALIDATION_MESSAGES.VISA.WISHED_VISA.REQUIRED,
     invalid_type_error: VALIDATION_MESSAGES.VISA.WISHED_VISA.INVALID,
@@ -162,13 +159,10 @@ export const SearchVisaSchema = z.object({
       VALIDATION_MESSAGES.VISA.CLIENT_ID.INVALID
     ),
   existing_visa: z
-    .enum([...EXISTING_VISA, ''], {
-      errorMap: () => ({
-        message: VALIDATION_MESSAGES.VISA.EXISTING_VISA.INVALID,
-      }),
-    })
+    .enum([...EXISTING_VISA, ''])
     .optional()
-    .transform(val => (val === '' ? undefined : val)),
+    .transform(val => (val === '' || val === undefined ? undefined : val))
+    .nullable(),
   wished_visa: z
     .enum([...WISHED_VISA, ''], {
       errorMap: () => ({
