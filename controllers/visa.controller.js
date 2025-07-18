@@ -109,9 +109,21 @@ export const getVisaById = asyncHandler(async (req, res) => {
     );
 }, 'Failed to retrieve visa record');
 
-// Get visa records by client ID (Admin only)
+// Get visa records by client ID with pagination and search (Admin only)
 export const getVisasByClientId = asyncHandler(async (req, res) => {
   const { client_id } = req.params;
+  const { page, limit, search, existing_visa, wished_visa, is_active } =
+    req.validatedQuery || req.query;
+
+  // Use default values if validatedQuery is not available
+  const queryParams = {
+    page: page || 1,
+    limit: limit || 10,
+    search: search || '',
+    existing_visa,
+    wished_visa,
+    is_active,
+  };
 
   // Check if client exists
   const client = await Client.findByPk(client_id);
@@ -123,7 +135,15 @@ export const getVisasByClientId = asyncHandler(async (req, res) => {
       );
   }
 
-  const visas = await Visa.findByClientId(client_id, {
+  // Use the pagination method with client_id filter
+  const result = await Visa.paginateWithSearch({
+    page: parseInt(queryParams.page),
+    limit: parseInt(queryParams.limit),
+    search: queryParams.search,
+    client_id: parseInt(client_id),
+    existing_visa: queryParams.existing_visa,
+    wished_visa: queryParams.wished_visa,
+    is_active: queryParams.is_active,
     include: [
       {
         model: Client,
@@ -140,13 +160,7 @@ export const getVisasByClientId = asyncHandler(async (req, res) => {
 
   return res.status(200).json(
     createApiResponse(true, 'Client visa records retrieved successfully', {
-      visas,
-      client: {
-        id: client.id,
-        name: client.name,
-        family_name: client.family_name,
-        email: client.email,
-      },
+      ...result,
     })
   );
 }, 'Failed to retrieve client visa records');

@@ -195,7 +195,7 @@ Visa.paginateWithSearch = async function ({
   });
 
   return {
-    visas: rows,
+    result: rows,
     pagination: {
       currentPage: parseInt(page),
       totalPages: Math.ceil(count / limit),

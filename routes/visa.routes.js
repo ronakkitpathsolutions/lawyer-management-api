@@ -14,6 +14,7 @@ import {
   validateUpdateVisa,
   validateVisaSearch,
   validateVisaId,
+  validateClientVisaSearch,
   requireAdminRole,
 } from '../middlewares/visa.middleware.js';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
@@ -34,8 +35,12 @@ authRoutes.get('/', validateVisaSearch, getAllVisas);
 // POST /api/visas - Create a new visa record
 authRoutes.post('/create', validateCreateVisa, createVisa);
 
-// GET /api/visas/client/:client_id - Get visa records by client ID
-authRoutes.get('/client/:client_id', getVisasByClientId);
+// GET /api/visas/client/:client_id - Get visa records by client ID with pagination and search
+authRoutes.get(
+  '/client/:client_id',
+  validateClientVisaSearch,
+  getVisasByClientId
+);
 
 // GET /api/visas/:id - Get visa record by ID
 authRoutes.get('/:id', validateVisaId, getVisaById);
