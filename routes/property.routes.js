@@ -15,6 +15,7 @@ import {
   validateUpdateProperty,
   validatePropertySearch,
   validatePropertyId,
+  validateClientPropertySearch,
   requireAdminRole,
 } from '../middlewares/property.middleware.js';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
@@ -41,8 +42,12 @@ propertyRoutes.post(
   createProperty
 );
 
-// GET /api/properties/client/:client_id - Get property records by client ID
-propertyRoutes.get('/client/:client_id', getPropertiesByClientId);
+// GET /api/properties/client/:client_id - Get property records by client ID with pagination and search
+propertyRoutes.get(
+  '/client/:client_id',
+  validateClientPropertySearch,
+  getPropertiesByClientId
+);
 
 // GET /api/properties/:id - Get property record by ID
 propertyRoutes.get('/:id', validatePropertyId, getPropertyById);

@@ -102,7 +102,7 @@ export const validatePropertySearch = async (req, res, next) => {
             createApiResponse(
               false,
               VALIDATION_MESSAGES.PROPERTY.CLIENT_ID.NOT_FOUND ||
-                'Client not found'
+              'Client not found'
             )
           );
       }
@@ -137,7 +137,7 @@ export const checkPropertyExists = async (req, res, next) => {
           createApiResponse(
             false,
             VALIDATION_MESSAGES.PROPERTY.GENERAL.NOT_FOUND ||
-              'Property not found'
+            'Property not found'
           )
         );
     }
@@ -172,7 +172,7 @@ export const checkClientExists = async (req, res, next) => {
             createApiResponse(
               false,
               VALIDATION_MESSAGES.PROPERTY.CLIENT_ID.NOT_FOUND ||
-                'Client not found'
+              'Client not found'
             )
           );
       }
@@ -219,4 +219,58 @@ export const requireAdminRole = (req, res, next) => {
   }
 
   next();
+};
+
+// Middleware to validate client ID parameter and search query parameters
+export const validateClientPropertySearch = async (req, res, next) => {
+  try {
+    // Validate client_id parameter
+    const { client_id } = req.params;
+    if (!client_id || isNaN(parseInt(client_id, 10))) {
+      return res
+        .status(400)
+        .json(createApiResponse(false, 'Invalid client ID'));
+    }
+
+    // Parse and validate query parameters
+    const queryData = {
+      page: req.query.page ? parseInt(req.query.page, 10) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit, 10) : 10,
+      search: req.query.search || '',
+      transaction_type: req.query.transaction_type || undefined,
+      property_type: req.query.property_type || undefined,
+      is_active:
+        req.query.is_active !== undefined
+          ? req.query.is_active === 'true'
+          : undefined,
+    };
+
+    // Validate page and limit
+    if (queryData.page < 1) {
+      return res
+        .status(400)
+        .json(createApiResponse(false, 'Page must be greater than 0'));
+    }
+
+    if (queryData.limit < 1 || queryData.limit > 100) {
+      return res
+        .status(400)
+        .json(createApiResponse(false, 'Limit must be between 1 and 100'));
+    }
+
+    // Add validated data to request
+    req.validatedQuery = queryData;
+    next();
+  } catch (error) {
+    return res
+      .status(500)
+      .json(
+        createApiResponse(
+          false,
+          'Parameter validation failed',
+          null,
+          error.message
+        )
+      );
+  }
 };
