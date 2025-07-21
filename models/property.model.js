@@ -13,6 +13,7 @@ import {
   LAND_TITLE_TEXTS,
   DECLARED_LAND_OFFICE_PRICE_TEXTS,
   PLACE_OF_PAYMENT_TEXTS,
+  HANDOVER_DATE_TEXTS,
 } from '../utils/constants/variables.js';
 import sequelize from '../configs/database.js';
 
@@ -77,14 +78,8 @@ const Property = sequelize.define(
       },
     },
     transaction_type: {
-      type: DataTypes.ENUM(...TYPE_OF_TRANSACTION_TEXTS),
+      type: DataTypes.TEXT,
       allowNull: true,
-      validate: {
-        isIn: {
-          args: [TYPE_OF_TRANSACTION_TEXTS],
-          msg: VALIDATION_MESSAGES.PROPERTY.TRANSACTION_TYPE.INVALID,
-        },
-      },
     },
     property_type: {
       type: DataTypes.ENUM(...TYPE_OF_PROPERTY_TEXTS),
@@ -115,10 +110,11 @@ const Property = sequelize.define(
       },
     },
     handover_date: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.ENUM(...HANDOVER_DATE_TEXTS),
       allowNull: true,
       validate: {
-        isDate: {
+        isIn: {
+          args: [HANDOVER_DATE_TEXTS],
           msg: VALIDATION_MESSAGES.PROPERTY.HANDOVER_DATE.INVALID,
         },
       },
@@ -208,11 +204,38 @@ const Property = sequelize.define(
       },
     },
     house_warranty: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.ENUM(...['yes', 'no']),
       allowNull: true,
       validate: {
-        isBoolean: {
+        isIn: {
+          args: [['yes', 'no']],
           msg: VALIDATION_MESSAGES.PROPERTY.HOUSE_WARRANTY.INVALID,
+        },
+      },
+    },
+    warranty_condition: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      validate: {
+        len: {
+          args: [2, 500],
+          msg:
+            VALIDATION_MESSAGES.PROPERTY.WARRANTY_CONDITION.TOO_SHORT +
+            ' and ' +
+            VALIDATION_MESSAGES.PROPERTY.WARRANTY_CONDITION.TOO_LONG,
+        },
+      },
+    },
+    warranty_term: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      validate: {
+        len: {
+          args: [2, 100],
+          msg:
+            VALIDATION_MESSAGES.PROPERTY.WARRANTY_TERM.TOO_SHORT +
+            ' and ' +
+            VALIDATION_MESSAGES.PROPERTY.WARRANTY_TERM.TOO_LONG,
         },
       },
     },

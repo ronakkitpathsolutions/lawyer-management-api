@@ -2,11 +2,6 @@ import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import s3 from '../configs/s3.js';
 import { ENV } from '../configs/index.js';
 
-/**
- * Delete a file from S3 bucket
- * @param {string} fileUrl - The full S3 URL or just the key
- * @returns {Promise<boolean>} - Returns true if deletion was successful
- */
 export const deleteS3File = async fileUrl => {
   try {
     if (!fileUrl) return false;
@@ -36,21 +31,11 @@ export const deleteS3File = async fileUrl => {
   }
 };
 
-/**
- * Get the full S3 URL for a given key
- * @param {string} s3Key - The S3 object key
- * @returns {string} - The full S3 URL
- */
 export const getS3Url = s3Key => {
   if (!s3Key) return null;
   return `https://${ENV.S3_BUCKET_NAME}.s3.${ENV.S3_REGION}.amazonaws.com/${s3Key}`;
 };
 
-/**
- * Extract S3 key from full URL
- * @param {string} s3Url - The full S3 URL
- * @returns {string|null} - The S3 key or null if invalid
- */
 export const extractS3Key = s3Url => {
   try {
     if (!s3Url || !s3Url.startsWith('http')) return s3Url;

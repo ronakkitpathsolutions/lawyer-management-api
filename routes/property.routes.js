@@ -19,7 +19,10 @@ import {
   requireAdminRole,
 } from '../middlewares/property.middleware.js';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
-import { handlePropertyDocumentsUpload } from '../middlewares/upload.middleware.js';
+import {
+  uploadPropertyDocumentsToS3,
+  handleS3PropertyUploadError,
+} from '../middlewares/s3-property.middleware.js';
 
 const propertyRoutes = express.Router();
 
@@ -37,7 +40,8 @@ propertyRoutes.get('/', validatePropertySearch, getAllProperties);
 // POST /api/properties - Create a new property record
 propertyRoutes.post(
   '/create',
-  handlePropertyDocumentsUpload,
+  uploadPropertyDocumentsToS3,
+  handleS3PropertyUploadError,
   validateCreateProperty,
   createProperty
 );
@@ -56,7 +60,8 @@ propertyRoutes.get('/:id', validatePropertyId, getPropertyById);
 propertyRoutes.patch(
   '/:id',
   validatePropertyId,
-  handlePropertyDocumentsUpload,
+  uploadPropertyDocumentsToS3,
+  handleS3PropertyUploadError,
   validateUpdateProperty,
   updateProperty
 );

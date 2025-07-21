@@ -1,6 +1,5 @@
 import User from '../models/user.model.js';
 import { createValidationMiddleware } from './validation.middleware.js';
-import { handleProfileUpload } from './upload.middleware.js';
 import { verifyToken } from '../utils/jwt.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 import { asyncHandler, createApiResponse } from '../utils/helper.js';

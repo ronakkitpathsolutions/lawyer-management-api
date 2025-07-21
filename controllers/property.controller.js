@@ -1,9 +1,5 @@
-import {
-  createApiResponse,
-  asyncHandler,
-  deleteDocumentFiles,
-  PROPERTY_DOCUMENT_FIELDS,
-} from '../utils/helper.js';
+import { createApiResponse, asyncHandler } from '../utils/helper.js';
+import { deleteS3File } from '../utils/s3-helper.js';
 import Property from '../models/property.model.js';
 import Client from '../models/client.model.js';
 import User from '../models/user.model.js';
@@ -21,12 +17,10 @@ export const createProperty = asyncHandler(async (req, res) => {
     created_by: createdBy,
   };
 
-  // Add document paths if files were uploaded
+  // Add document S3 URLs if files were uploaded
   if (req.propertyDocuments) {
     Object.keys(req.propertyDocuments).forEach(documentType => {
-      propertyData[documentType] = req.propertyDocuments[
-        documentType
-      ].path.replace(/\\/g, '/');
+      propertyData[documentType] = req.propertyDocuments[documentType].s3Url;
     });
   }
 
@@ -202,18 +196,27 @@ export const updateProperty = asyncHandler(async (req, res) => {
   // Handle document uploads if present
   const updateData = { ...validatedData };
 
-  // Add document paths if files were uploaded and delete old documents
+  // Add document S3 URLs if files were uploaded and delete old documents from S3
   if (req.propertyDocuments) {
     const fieldsToUpdate = Object.keys(req.propertyDocuments);
 
-    // Delete old documents for the fields being updated
-    deleteDocumentFiles(property, fieldsToUpdate);
+    // Delete old documents from S3 for the fields being updated
+    for (const documentType of fieldsToUpdate) {
+      const oldDocumentUrl = property[documentType];
+      if (oldDocumentUrl) {
+        try {
+          await deleteS3File(oldDocumentUrl);
+          console.log(`Successfully deleted old S3 file: ${oldDocumentUrl}`);
+        } catch (error) {
+          console.error(`Error deleting old S3 file: ${oldDocumentUrl}`, error);
+          // Continue execution even if deletion fails
+        }
+      }
+    }
 
-    // Set new document paths
+    // Set new document S3 URLs
     fieldsToUpdate.forEach(documentType => {
-      updateData[documentType] = req.propertyDocuments[
-        documentType
-      ].path.replace(/\\/g, '/');
+      updateData[documentType] = req.propertyDocuments[documentType].s3Url;
     });
   }
 
@@ -256,8 +259,26 @@ export const deleteProperty = asyncHandler(async (req, res) => {
       );
   }
 
-  // Collect all document paths for deletion
-  deleteDocumentFiles(property, PROPERTY_DOCUMENT_FIELDS);
+  // Delete all document files from S3
+  const documentFields = [
+    'land_title_document',
+    'house_title_document',
+    'house_registration_book',
+    'land_lease_agreement',
+  ];
+
+  for (const field of documentFields) {
+    const documentUrl = property[field];
+    if (documentUrl) {
+      try {
+        await deleteS3File(documentUrl);
+        console.log(`Successfully deleted S3 file: ${documentUrl}`);
+      } catch (error) {
+        console.error(`Error deleting S3 file: ${documentUrl}`, error);
+        // Continue execution even if deletion fails
+      }
+    }
+  }
 
   // Delete the property record
   await property.destroy();

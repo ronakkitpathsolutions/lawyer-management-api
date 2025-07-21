@@ -291,7 +291,8 @@ export const VALIDATION_MESSAGES = {
     },
     TRANSACTION_TYPE: {
       REQUIRED: 'Transaction type is required',
-      INVALID: 'Transaction type must be one of: buy, sell, rent',
+      INVALID:
+        'Transaction type must contain only valid values: buy, sell, rent, sublease, mortgage, construction, joint_venture, consultant_from_owner, consultant_from_buyer. Multiple values can be separated by commas (e.g., "buy,sell,rent")',
     },
     PROPERTY_TYPE: {
       REQUIRED: 'Property type is required',
@@ -354,6 +355,18 @@ export const VALIDATION_MESSAGES = {
     HOUSE_WARRANTY: {
       REQUIRED: 'House warranty is required',
       INVALID: 'House warranty must be a boolean value (true/false)',
+    },
+    WARRANTY_CONDITION: {
+      REQUIRED: 'Warranty condition is required when house warranty is yes',
+      TOO_SHORT: 'Warranty condition must be at least 2 characters long',
+      TOO_LONG: 'Warranty condition must not exceed 500 characters',
+      INVALID: 'Warranty condition contains invalid characters',
+    },
+    WARRANTY_TERM: {
+      REQUIRED: 'Warranty term is required when house warranty is yes',
+      TOO_SHORT: 'Warranty term must be at least 2 characters long',
+      TOO_LONG: 'Warranty term must not exceed 100 characters',
+      INVALID: 'Warranty term contains invalid characters',
     },
     FURNITURE_INCLUDED: {
       REQUIRED: 'Furniture included status is required',

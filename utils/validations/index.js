@@ -64,7 +64,7 @@ export const Property = {
   validate: {
     create: PropertyValidation.validateCreateProperty,
     update: PropertyValidation.validateUpdateProperty,
-    search: PropertyValidation.validatePropertySearch,
+    search: PropertyValidation.validateSearchProperty,
   },
 };
 
