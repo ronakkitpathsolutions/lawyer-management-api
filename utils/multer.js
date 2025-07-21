@@ -1,7 +1,6 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import crypto from 'crypto';
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = './uploads';
@@ -100,15 +99,8 @@ export const uploadMultiple = (fieldName, maxFiles = 5) => {
   return upload.array(fieldName, maxFiles);
 };
 
-export const uploadFields = fields => {
-  return upload.fields(fields);
-};
-
 // Predefined middleware for common use cases
 export const uploadProfileImage = upload.single('profile');
-export const uploadDocument = upload.single('document');
-export const uploadPropertyImages = upload.array('property', 10);
-export const uploadVisaDocuments = upload.array('visa', 5);
 
 // Property documents upload configuration
 export const uploadPropertyDocuments = upload.fields([
@@ -116,14 +108,6 @@ export const uploadPropertyDocuments = upload.fields([
   { name: 'house_title_document', maxCount: 1 },
   { name: 'house_registration_book', maxCount: 1 },
   { name: 'land_lease_agreement', maxCount: 1 },
-]);
-
-// Multiple field upload for mixed content
-export const uploadMixed = upload.fields([
-  { name: 'profile', maxCount: 1 },
-  { name: 'document', maxCount: 5 },
-  { name: 'property', maxCount: 10 },
-  { name: 'visa', maxCount: 5 },
 ]);
 
 // Error handling middleware

@@ -18,4 +18,11 @@ export const ENV = {
   SMTP_PASS: process.env.SMTP_PASS || 'your_smtp_password',
   SMTP_FROM: process.env.SMTP_FROM || 'noreply@example.com',
   SMTP_SECURE: process.env.SMTP_SECURE || false,
+
+  // S3 Configuration
+  // S3 Configuration
+  S3_BUCKET_NAME: process.env.S3_BUCKET_NAME || 'your-bucket-name',
+  S3_REGION: process.env.S3_REGION || 'us-east-1',
+  S3_ACCESS_KEY: process.env.S3_ACCESS_KEY || 'your-access-key',
+  S3_SECRET_KEY: process.env.S3_SECRET_KEY || 'your-secret-key',
 };

@@ -1,11 +1,7 @@
 import {
   uploadSingle,
   uploadMultiple,
-  uploadFields,
   uploadProfileImage,
-  uploadDocument,
-  uploadPropertyImages,
-  uploadVisaDocuments,
   uploadPropertyDocuments,
   handleUploadError,
   getFileUrl,
@@ -88,72 +84,6 @@ export const handleProfileUpload = (req, res, next) => {
   });
 };
 
-// Middleware for document upload
-export const handleDocumentUpload = (req, res, next) => {
-  uploadDocument(req, res, error => {
-    if (error) {
-      return handleUploadError(error, req, res, next);
-    }
-
-    if (req.file) {
-      req.document = {
-        originalName: req.file.originalname,
-        filename: req.file.filename,
-        path: req.file.path,
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-        url: getFileUrl(req, req.file.filename),
-      };
-    }
-
-    next();
-  });
-};
-
-// Middleware for property images upload
-export const handlePropertyImagesUpload = (req, res, next) => {
-  uploadPropertyImages(req, res, error => {
-    if (error) {
-      return handleUploadError(error, req, res, next);
-    }
-
-    if (req.files && req.files.length > 0) {
-      req.propertyImages = req.files.map(file => ({
-        originalName: file.originalname,
-        filename: file.filename,
-        path: file.path,
-        size: file.size,
-        mimetype: file.mimetype,
-        url: getFileUrl(req, file.filename),
-      }));
-    }
-
-    next();
-  });
-};
-
-// Middleware for visa documents upload
-export const handleVisaDocumentsUpload = (req, res, next) => {
-  uploadVisaDocuments(req, res, error => {
-    if (error) {
-      return handleUploadError(error, req, res, next);
-    }
-
-    if (req.files && req.files.length > 0) {
-      req.visaDocuments = req.files.map(file => ({
-        originalName: file.originalname,
-        filename: file.filename,
-        path: file.path,
-        size: file.size,
-        mimetype: file.mimetype,
-        url: getFileUrl(req, file.filename),
-      }));
-    }
-
-    next();
-  });
-};
-
 // Middleware for property documents upload
 export const handlePropertyDocumentsUpload = (req, res, next) => {
   uploadPropertyDocuments(req, res, error => {
@@ -190,36 +120,6 @@ export const handlePropertyDocumentsUpload = (req, res, next) => {
 
     next();
   });
-};
-
-// Cleanup middleware to delete uploaded files on error
-export const cleanupUploadedFiles = (req, res, next) => {
-  const originalSend = res.send;
-
-  res.send = function (data) {
-    // If there's an error and files were uploaded, clean them up
-    if (res.statusCode >= 400) {
-      // Clean up single file
-      if (req.file) {
-        deleteFile(req.file.path);
-      }
-
-      // Clean up multiple files
-      if (req.files) {
-        if (Array.isArray(req.files)) {
-          req.files.forEach(file => deleteFile(file.path));
-        } else {
-          Object.values(req.files).forEach(fileArray => {
-            fileArray.forEach(file => deleteFile(file.path));
-          });
-        }
-      }
-    }
-
-    originalSend.call(this, data);
-  };
-
-  next();
 };
 
 // Export utility functions
