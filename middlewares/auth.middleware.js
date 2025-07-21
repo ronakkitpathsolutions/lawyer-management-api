@@ -127,37 +127,3 @@ export const validateLoginRole = asyncHandler(async (req, res, next) => {
   req.foundUser = user;
   next();
 }, 'Role validation failed');
-
-// Combined middleware for profile update with file upload
-export const updateProfileWithImageMiddleware = asyncHandler(
-  async (req, res, next) => {
-    // First handle file upload
-    handleProfileUpload(req, res, uploadError => {
-      if (uploadError) {
-        return res
-          .status(400)
-          .json(
-            createApiResponse(
-              false,
-              `File upload error: ${uploadError.message}`
-            )
-          );
-      }
-
-      // If file was uploaded, add the path to the profile field
-      if (req.file) {
-        const profilePath = req.file.path
-          .replace(/\\/g, '/')
-          .replace('./uploads/', '/uploads/');
-        req.body.profile = profilePath;
-      }
-
-      // Now validate the data
-      const validationMiddleware = createValidationMiddleware(
-        User.validateUpdateProfile
-      );
-      validationMiddleware(req, res, next);
-    });
-  },
-  'Profile update with image failed'
-);

@@ -19,9 +19,12 @@ import {
   resendVerificationValidationMiddleware,
   resetPasswordValidationMiddleware,
   updateProfileValidationMiddleware,
-  updateProfileWithImageMiddleware,
   validateLoginRole,
 } from '../middlewares/auth.middleware.js';
+import {
+  uploadProfileImageToS3,
+  handleS3UploadError,
+} from '../middlewares/s3.middleware.js';
 
 const authRoutes = express.Router();
 
@@ -53,7 +56,9 @@ authRoutes.get('/profile', authenticateToken, getProfile);
 authRoutes.put(
   '/profile',
   authenticateToken,
-  updateProfileWithImageMiddleware,
+  uploadProfileImageToS3,
+  updateProfileValidationMiddleware,
+  handleS3UploadError,
   updateProfile
 );
 

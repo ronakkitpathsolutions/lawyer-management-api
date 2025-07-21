@@ -1,3 +1,11 @@
+import { createApiResponse, asyncHandler } from '../utils/helper.js';
+import User from '../models/user.model.js';
+import { generateToken } from '../utils/jwt.js';
+import { generateRefreshToken } from '../utils/refresh-token.js';
+import { sendEmail } from '../utils/mailer.js';
+import { deleteS3File } from '../utils/s3-helper.js';
+import VALIDATION_MESSAGES from '../utils/constants/messages.js';
+
 // Change password for authenticated user
 export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.validatedData;
@@ -31,13 +39,6 @@ export const changePassword = asyncHandler(async (req, res) => {
     .status(200)
     .json(createApiResponse(true, 'Password changed successfully'));
 }, 'Failed to change password');
-import { createApiResponse, asyncHandler } from '../utils/helper.js';
-import User from '../models/user.model.js';
-import { generateToken } from '../utils/jwt.js';
-import { generateRefreshToken } from '../utils/refresh-token.js';
-import { sendEmail } from '../utils/mailer.js';
-import { deleteFile } from '../utils/multer.js';
-import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 
 export const login = asyncHandler(async (req, res) => {
   // Get validated data from middleware
@@ -317,7 +318,7 @@ export const getProfile = asyncHandler(async (req, res) => {
 
 // Update user profile for authenticated user
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { name, phone_number, profile } = req.validatedData;
+  const { name, phone_number } = req.validatedData || {};
   const userId = req.user.id;
 
   // Find user by id
@@ -330,15 +331,26 @@ export const updateProfile = asyncHandler(async (req, res) => {
       );
   }
 
-  // If a new profile image is being uploaded and user has an old profile image, delete it
-  if (profile && user.profile && user.profile !== profile) {
-    try {
-      // Convert the database path to file system path for deletion
-      const oldImagePath = user.profile.replace('/uploads/', './uploads/');
-      await deleteFile(oldImagePath);
-    } catch (error) {
-      console.warn('Failed to delete old profile image:', error.message);
-      // Continue with update even if old image deletion fails
+  // Handle profile image from S3 upload
+  let profileImageUrl = user.profile; // Keep existing profile if no new image
+
+  if (req.file) {
+    console.log('File uploaded to S3:', req.file);
+    // New profile image uploaded to S3
+    profileImageUrl = req.file.location; // S3 URL from multer-s3
+
+    // Delete old S3 image if user had one
+    if (user.profile && user.profile !== profileImageUrl) {
+      try {
+        await deleteS3File(user.profile);
+        console.log('Old profile image deleted successfully');
+      } catch (error) {
+        console.warn(
+          'Failed to delete old profile image from S3:',
+          error.message
+        );
+        // Continue with update even if old image deletion fails
+      }
     }
   }
 
@@ -346,7 +358,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const updateData = {};
   if (name !== undefined) updateData.name = name;
   if (phone_number !== undefined) updateData.phone_number = phone_number;
-  if (profile !== undefined) updateData.profile = profile;
+  if (profileImageUrl !== undefined) updateData.profile = profileImageUrl;
+
+  console.log('Updating user with data:', updateData);
 
   // Update user profile
   await user.update(updateData);
