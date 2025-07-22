@@ -173,15 +173,8 @@ const Property = sequelize.define(
       },
     },
     acceptable_method_of_payment: {
-      type: DataTypes.ENUM(...ACCEPTABLE_PAYMENT_METHODS_TEXTS),
+      type: DataTypes.TEXT,
       allowNull: true,
-      validate: {
-        isIn: {
-          args: [ACCEPTABLE_PAYMENT_METHODS_TEXTS],
-          msg: VALIDATION_MESSAGES.PROPERTY.ACCEPTABLE_METHOD_OF_PAYMENT
-            .INVALID,
-        },
-      },
     },
     place_of_payment: {
       type: DataTypes.ENUM(...PLACE_OF_PAYMENT_TEXTS),

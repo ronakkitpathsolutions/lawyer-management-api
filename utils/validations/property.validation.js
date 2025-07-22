@@ -235,14 +235,13 @@ const PropertyValidationSchema = z
       .optional()
       .nullable(),
     acceptable_method_of_payment: z
-      .enum(ACCEPTABLE_PAYMENT_METHODS_TEXTS, {
-        errorMap: () => ({
-          message:
-            VALIDATION_MESSAGES.PROPERTY.ACCEPTABLE_METHOD_OF_PAYMENT.INVALID,
-        }),
-      })
+      .string()
       .optional()
-      .nullable(),
+      .nullable()
+      .transform(val => {
+        if (!val || val === '') return null;
+        return val;
+      }),
     place_of_payment: z
       .enum(PLACE_OF_PAYMENT_TEXTS, {
         errorMap: () => ({
