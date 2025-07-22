@@ -225,6 +225,8 @@ export const validateClientVisaSearch = async (req, res, next) => {
       page: req.query.page ? parseInt(req.query.page, 10) : 1,
       limit: req.query.limit ? parseInt(req.query.limit, 10) : 10,
       search: req.query.search || '',
+      sortOrder: req.query.sortOrder || 'DESC',
+      sortBy: req.query.sortBy || 'createdAt',
       existing_visa: req.query.existing_visa || undefined,
       wished_visa: req.query.wished_visa || undefined,
       is_active:

@@ -178,6 +178,36 @@ export const SearchVisaSchema = z.object({
       if (val === undefined || val === '') return undefined;
       return val === 'true';
     }),
+  sortBy: z
+    .string()
+    .optional()
+    .default('createdAt')
+    .refine(
+      val =>
+        [
+          'id',
+          'client_id',
+          'existing_visa',
+          'wished_visa',
+          'latest_entry_date',
+          'existing_visa_expiry',
+          'intended_departure_date',
+          'created_by',
+          'is_active',
+          'createdAt',
+          'updatedAt',
+        ].includes(val),
+      'Invalid sortBy field'
+    ),
+  sortOrder: z
+    .string()
+    .optional()
+    .default('DESC')
+    .transform(val => val.toUpperCase())
+    .refine(
+      val => ['ASC', 'DESC'].includes(val),
+      'Invalid sortOrder, must be ASC or DESC'
+    ),
 });
 
 // ID validation schema

@@ -140,6 +140,8 @@ Visa.paginateWithSearch = async function ({
   limit = 10,
   search = '',
   client_id,
+  sortBy = 'createdAt',
+  sortOrder = 'DESC',
   existing_visa,
   wished_visa,
   is_active,
@@ -207,7 +209,7 @@ Visa.paginateWithSearch = async function ({
     where: whereConditions,
     limit: parseInt(limit),
     offset: parseInt(offset),
-    order: [['createdAt', 'DESC']],
+    order: [[sortBy, sortOrder]],
     include,
     ...options,
   });

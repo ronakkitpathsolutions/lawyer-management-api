@@ -12,7 +12,7 @@ if (!ENV.DATABASE_URL) {
 
 const sequelize = new Sequelize(ENV.DATABASE_URL, {
   dialect: 'postgres',
-  logging: ENV.NODE_ENV === 'development' ? console.log : false,
+  logging: false,
 
   // Enhanced pool configuration
   pool: {

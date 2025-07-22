@@ -44,7 +44,6 @@ export const createVisa = asyncHandler(async (req, res) => {
 // Get all visa records with pagination and search (Admin only)
 export const getAllVisas = asyncHandler(async (req, res) => {
   const { validatedData } = req;
-
   const result = await Visa.paginateWithSearch({
     ...validatedData,
     include: [
@@ -112,8 +111,16 @@ export const getVisaById = asyncHandler(async (req, res) => {
 // Get visa records by client ID with pagination and search (Admin only)
 export const getVisasByClientId = asyncHandler(async (req, res) => {
   const { client_id } = req.params;
-  const { page, limit, search, existing_visa, wished_visa, is_active } =
-    req.validatedQuery || req.query;
+  const {
+    page,
+    limit,
+    search,
+    existing_visa,
+    wished_visa,
+    is_active,
+    sortBy,
+    sortOrder,
+  } = req.validatedQuery || req.query;
 
   // Use default values if validatedQuery is not available
   const queryParams = {
@@ -123,6 +130,8 @@ export const getVisasByClientId = asyncHandler(async (req, res) => {
     existing_visa,
     wished_visa,
     is_active,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
   };
 
   // Check if client exists
@@ -144,6 +153,8 @@ export const getVisasByClientId = asyncHandler(async (req, res) => {
     existing_visa: queryParams.existing_visa,
     wished_visa: queryParams.wished_visa,
     is_active: queryParams.is_active,
+    sortBy: queryParams.sortBy,
+    sortOrder: queryParams.sortOrder,
     include: [
       {
         model: Client,

@@ -65,7 +65,24 @@ export const authenticateToken = asyncHandler(async (req, res, next) => {
   }
 
   // Verify and decode token
-  const decoded = verifyToken(token);
+  let decoded;
+  try {
+    decoded = verifyToken(token);
+  } catch (error) {
+    // Handle JWT specific errors with appropriate status codes
+    if (error.message === 'Token has expired') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token has expired',
+      });
+    }
+
+    // Handle other JWT errors (invalid token, malformed, etc.)
+    return res.status(401).json({
+      success: false,
+      message: error.message || VALIDATION_MESSAGES.AUTH.TOKEN.INVALID,
+    });
+  }
 
   // Check if user exists and is active
   const user = await User.findByPk(decoded.id);
