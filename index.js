@@ -8,21 +8,21 @@ import { ENV } from './configs/index.js';
 const app = express();
 const PORT = ENV.PORT || 3000;
 
-// CORS Configuration
-const corsOptions = {
-  origin: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://192.168.1.59:5173',
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-
 // Middleware
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '10mb' })); // JSON parser with size limit
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
