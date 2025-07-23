@@ -1,9 +1,7 @@
-import { property, z } from 'zod';
+import { z } from 'zod';
 import VALIDATION_MESSAGES from '../constants/messages.js';
 import {
-  TYPE_OF_TRANSACTION_TEXTS,
   TYPE_OF_PROPERTY_TEXTS,
-  ACCEPTABLE_PAYMENT_METHODS_TEXTS,
   FURNITURE_INCLUDED_TEXTS,
   COST_SHARING_TEXTS,
   PROPERTY_CONDITION_TEXTS,

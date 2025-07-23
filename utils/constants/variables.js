@@ -44,18 +44,6 @@ export const EXISTING_VISA = [
   'ltr_work_from_thailand_professional',
 ];
 
-export const TYPE_OF_TRANSACTION_TEXTS = [
-  'buy',
-  'sell',
-  'rent',
-  'sublease',
-  'mortgage',
-  'construction',
-  'joint_venture',
-  'consultant_from_owner',
-  'consultant_from_buyer',
-];
-
 export const TYPE_OF_PROPERTY_TEXTS = [
   'house_and_land_freehold',
   'house_and_land_leasehold',

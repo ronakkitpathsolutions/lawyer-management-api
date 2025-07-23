@@ -49,20 +49,14 @@ const ClientValidationSchema = z.object({
       const today = new Date();
       return date < today;
     }, VALIDATION_MESSAGES.CLIENT.DOB.FUTURE_DATE)
-    .refine(val => {
-      const date = new Date(val);
-      const today = new Date();
-      const age = today.getFullYear() - date.getFullYear();
-      return age >= 18;
-    }, VALIDATION_MESSAGES.CLIENT.AGE.TOO_YOUNG)
     .optional()
     .nullable(),
   age: z
     .number()
     .int(VALIDATION_MESSAGES.CLIENT.AGE.INVALID)
-    .min(18, VALIDATION_MESSAGES.CLIENT.AGE.TOO_YOUNG)
+    .min(0, VALIDATION_MESSAGES.CLIENT.AGE.INVALID)
     .max(120, VALIDATION_MESSAGES.CLIENT.AGE.TOO_OLD)
-    .optional(), // This will be calculated from date_of_birth
+    .optional(), // Can be manually set or calculated from date_of_birth
   phone_number: z
     .string()
     .min(10, VALIDATION_MESSAGES.CLIENT.PHONE_NUMBER.TOO_SHORT)
@@ -149,7 +143,7 @@ const ClientValidationSchema = z.object({
 });
 
 // Schema for client creation (all required fields)
-export const CreateClientSchema = ClientValidationSchema.omit({ age: true });
+export const CreateClientSchema = ClientValidationSchema;
 
 // Schema for client updates (all fields optional except id)
 export const UpdateClientSchema = ClientValidationSchema.partial();

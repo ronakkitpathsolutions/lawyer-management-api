@@ -3,9 +3,7 @@ import { Property as PropertyValidation } from '../utils/validations/index.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 import { validateWithZod } from '../utils/helper.js';
 import {
-  TYPE_OF_TRANSACTION_TEXTS,
   TYPE_OF_PROPERTY_TEXTS,
-  ACCEPTABLE_PAYMENT_METHODS_TEXTS,
   FURNITURE_INCLUDED_TEXTS,
   COST_SHARING_TEXTS,
   PROPERTY_CONDITION_TEXTS,

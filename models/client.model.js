@@ -105,10 +105,6 @@ const Client = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       validate: {
-        min: {
-          args: [18],
-          msg: VALIDATION_MESSAGES.CLIENT.AGE.TOO_YOUNG,
-        },
         max: {
           args: [120],
           msg: VALIDATION_MESSAGES.CLIENT.AGE.TOO_OLD,
@@ -301,8 +297,8 @@ const Client = sequelize.define(
     timestamps: true,
     hooks: {
       beforeSave: async client => {
-        // Calculate age if date_of_birth is provided
-        if (client.date_of_birth) {
+        // Calculate age only if date_of_birth is provided and has changed
+        if (client.date_of_birth && client.changed('date_of_birth')) {
           const today = new Date();
           const birthDate = new Date(client.date_of_birth);
           let age = today.getFullYear() - birthDate.getFullYear();
@@ -316,9 +312,6 @@ const Client = sequelize.define(
           }
 
           client.age = age;
-        } else {
-          // If no date_of_birth is provided, set age to null
-          client.age = null;
         }
       },
     },
