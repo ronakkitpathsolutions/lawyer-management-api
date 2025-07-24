@@ -23,7 +23,6 @@ export const deleteS3File = async fileUrl => {
     });
 
     await s3.send(deleteCommand);
-    console.log(`Successfully deleted S3 file: ${s3Key}`);
     return true;
   } catch (error) {
     console.error('Error deleting S3 file:', error);

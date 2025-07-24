@@ -27,8 +27,6 @@ export const sendEmail = async ({ to, subject, html }) => {
   try {
     return await transporter.sendMail(mailOptions);
   } catch (error) {
-    // Log the error for debugging
-    console.error('Error sending email:', error);
     // Optionally, you can throw a custom error or return a user-friendly message
     throw new Error(VALIDATION_MESSAGES.SYSTEM.SERVER_ERROR);
   }

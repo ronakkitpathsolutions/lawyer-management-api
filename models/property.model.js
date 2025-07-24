@@ -12,6 +12,7 @@ import {
   DECLARED_LAND_OFFICE_PRICE_TEXTS,
   PLACE_OF_PAYMENT_TEXTS,
   HANDOVER_DATE_TEXTS,
+  INTENDED_CLOSING_DATE_TEXTS,
 } from '../utils/constants/variables.js';
 import sequelize from '../configs/database.js';
 
@@ -99,11 +100,22 @@ const Property = sequelize.define(
       },
     },
     intended_closing_date: {
+      type: DataTypes.ENUM(...INTENDED_CLOSING_DATE_TEXTS),
+      allowNull: true,
+      validate: {
+        isIn: {
+          args: [INTENDED_CLOSING_DATE_TEXTS],
+          msg: VALIDATION_MESSAGES.PROPERTY.INTENDED_CLOSING_DATE.INVALID,
+        },
+      },
+    },
+    intended_closing_date_specific: {
       type: DataTypes.DATEONLY,
       allowNull: true,
       validate: {
         isDate: {
-          msg: VALIDATION_MESSAGES.PROPERTY.INTENDED_CLOSING_DATE.INVALID,
+          msg: VALIDATION_MESSAGES.PROPERTY.INTENDED_CLOSING_DATE_SPECIFIC
+            .INVALID,
         },
       },
     },

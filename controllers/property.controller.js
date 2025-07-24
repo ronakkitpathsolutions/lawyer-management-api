@@ -206,7 +206,6 @@ export const updateProperty = asyncHandler(async (req, res) => {
       if (oldDocumentUrl) {
         try {
           await deleteS3File(oldDocumentUrl);
-          console.log(`Successfully deleted old S3 file: ${oldDocumentUrl}`);
         } catch (error) {
           console.error(`Error deleting old S3 file: ${oldDocumentUrl}`, error);
           // Continue execution even if deletion fails
@@ -272,7 +271,6 @@ export const deleteProperty = asyncHandler(async (req, res) => {
     if (documentUrl) {
       try {
         await deleteS3File(documentUrl);
-        console.log(`Successfully deleted S3 file: ${documentUrl}`);
       } catch (error) {
         console.error(`Error deleting S3 file: ${documentUrl}`, error);
         // Continue execution even if deletion fails

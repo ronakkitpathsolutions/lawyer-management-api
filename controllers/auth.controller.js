@@ -335,7 +335,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
   let profileImageUrl = user.profile; // Keep existing profile if no new image
 
   if (req.file) {
-    console.log('File uploaded to S3:', req.file);
     // New profile image uploaded to S3
     profileImageUrl = req.file.location; // S3 URL from multer-s3
 
@@ -343,7 +342,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
     if (user.profile && user.profile !== profileImageUrl) {
       try {
         await deleteS3File(user.profile);
-        console.log('Old profile image deleted successfully');
       } catch (error) {
         console.warn(
           'Failed to delete old profile image from S3:',
@@ -359,8 +357,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
   if (name !== undefined) updateData.name = name;
   if (phone_number !== undefined) updateData.phone_number = phone_number;
   if (profileImageUrl !== undefined) updateData.profile = profileImageUrl;
-
-  console.log('Updating user with data:', updateData);
 
   // Update user profile
   await user.update(updateData);

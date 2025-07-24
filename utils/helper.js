@@ -7,7 +7,6 @@ export const formatZodErrors = zodError => {
   const errors = {};
 
   // ZodError usually has an 'issues' property in newer versions
-  // But based on console logs, let's try multiple approaches
   let errorArray = null;
 
   if (zodError && zodError.issues && Array.isArray(zodError.issues)) {
@@ -253,7 +252,6 @@ export const asyncHandler = (
     try {
       await fn(req, res, next);
     } catch (error) {
-      console.log('error', error);
       const formattedErrors = extractValidationErrors(error);
       return res
         .status(500)

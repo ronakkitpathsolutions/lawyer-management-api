@@ -52,13 +52,7 @@ export const TYPE_OF_PROPERTY_TEXTS = [
   'empty_land',
 ];
 
-export const INTENDED_CLOSING_DATE_TEXTS = [
-  'on_or_before',
-  'any_date',
-  'at_closing',
-  'after_closing',
-  'specific_date',
-];
+export const INTENDED_CLOSING_DATE_TEXTS = ['on_or_before', 'after', 'only_on'];
 
 export const HANDOVER_DATE_TEXTS = [
   'on_or_before',

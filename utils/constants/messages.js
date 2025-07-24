@@ -303,12 +303,16 @@ export const VALIDATION_MESSAGES = {
       INVALID: 'Reservation date must be a valid date',
     },
     INTENDED_CLOSING_DATE: {
-      REQUIRED: 'Intended closing date is required',
-      INVALID: 'Intended closing date must be a valid date',
+      REQUIRED: 'Intended closing is required',
+      INVALID: 'Intended closing is invalid',
+    },
+    INTENDED_CLOSING_DATE_SPECIFIC: {
+      REQUIRED: 'Specific intended closing date is required',
+      INVALID: 'Specific intended closing date must be a valid date',
     },
     HANDOVER_DATE: {
       REQUIRED: 'Handover date is required',
-      INVALID: 'Handover date must be a valid date',
+      INVALID: 'Handover date is invalid',
     },
     PROPERTY_NAME: {
       REQUIRED: 'Property name is required',

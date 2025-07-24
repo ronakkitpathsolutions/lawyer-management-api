@@ -10,6 +10,7 @@ import {
   DECLARED_LAND_OFFICE_PRICE_TEXTS,
   PLACE_OF_PAYMENT_TEXTS,
   HANDOVER_DATE_TEXTS,
+  INTENDED_CLOSING_DATE_TEXTS,
 } from '../constants/variables.js';
 
 // Base property validation schema
@@ -112,6 +113,19 @@ const PropertyValidationSchema = z
       ),
     intended_closing_date: z
       .string()
+      .trim()
+      .optional()
+      .nullable()
+      .transform(val => (val === '' ? null : val))
+      .refine(
+        val =>
+          val === null ||
+          val === undefined ||
+          INTENDED_CLOSING_DATE_TEXTS.includes(val),
+        VALIDATION_MESSAGES.PROPERTY.INTENDED_CLOSING_DATE.INVALID
+      ),
+    intended_closing_date_specific: z
+      .string()
       .optional()
       .nullable()
       .transform(val => {
@@ -138,7 +152,7 @@ const PropertyValidationSchema = z
       })
       .refine(
         val => val === null || /^\d{4}-\d{2}-\d{2}$/.test(val),
-        VALIDATION_MESSAGES.PROPERTY.INTENDED_CLOSING_DATE.INVALID
+        VALIDATION_MESSAGES.PROPERTY.INTENDED_CLOSING_DATE_SPECIFIC.INVALID
       ),
     handover_date: z
       .string()
