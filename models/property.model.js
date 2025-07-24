@@ -394,6 +394,16 @@ const Property = sequelize.define(
         },
       },
     },
+    repair_details: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      validate: {
+        len: {
+          args: [0, 500],
+          msg: VALIDATION_MESSAGES.PROPERTY.REPAIR_DETAILS.TOO_LONG,
+        },
+      },
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -477,6 +487,7 @@ Property.paginateWithSearch = async function ({
       { broker_company: { [Op.iLike]: `%${search}%` } },
       { transaction_type: { [Op.iLike]: `%${search}%` } },
       { property_type: { [Op.iLike]: `%${search}%` } },
+      { repair_details: { [Op.iLike]: `%${search}%` } },
     ];
   }
 

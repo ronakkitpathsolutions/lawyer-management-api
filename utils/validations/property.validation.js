@@ -398,6 +398,16 @@ const PropertyValidationSchema = z
       .max(500, VALIDATION_MESSAGES.PROPERTY.LAND_LEASE_AGREEMENT.TOO_LONG)
       .optional()
       .nullable(),
+    repair_details: z
+      .string()
+      .max(500, VALIDATION_MESSAGES.PROPERTY.REPAIR_DETAILS.TOO_LONG)
+      .trim()
+      .optional()
+      .nullable()
+      .transform(val => {
+        if (!val || val === '') return null;
+        return val;
+      }),
     is_active: z.boolean().optional().default(true),
   })
   .refine(

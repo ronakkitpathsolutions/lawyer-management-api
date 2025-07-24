@@ -314,6 +314,11 @@ export const VALIDATION_MESSAGES = {
       REQUIRED: 'Handover date is required',
       INVALID: 'Handover date is invalid',
     },
+    REPAIR_DETAILS: {
+      REQUIRED: 'Repair details are required',
+      TOO_LONG: 'Repair details must not exceed 500 characters',
+      INVALID: 'Repair details contain invalid characters',
+    },
     PROPERTY_NAME: {
       REQUIRED: 'Property name is required',
       TOO_SHORT: 'Property name must be at least 2 characters long',
