@@ -106,7 +106,7 @@ export const register = asyncHandler(async (req, res) => {
   });
 
   // Send verification email
-  const verificationUrl = `http://localhost:3000/verify?refresh_token=${refreshToken}`;
+  const verificationUrl = `https://guest-assessment.project-demo.info/verify?refresh_token=${refreshToken}`;
   await sendEmail({
     to: user.email,
     subject: 'Verify your account',
@@ -150,7 +150,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   const refreshToken = generateRefreshToken();
   await existingUser.update({ refresh_token: refreshToken });
   // Send reset password email
-  const resetUrl = `http://localhost:3000/reset-password?refresh_token=${refreshToken}`;
+  const resetUrl = `https://guest-assessment.project-demo.info/reset-password?refresh_token=${refreshToken}`;
   await sendEmail({
     to: existingUser.email,
     subject: 'Reset your password',
@@ -283,7 +283,7 @@ export const resendVerification = asyncHandler(async (req, res) => {
   const refreshToken = generateRefreshToken();
   await user.update({ refresh_token: refreshToken });
   // Send verification email
-  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify?refresh_token=${refreshToken}`;
+  const verificationUrl = `https://guest-assessment.project-demo.info/verify?refresh_token=${refreshToken}`;
   await sendEmail({
     to: user.email,
     subject: 'Verify your account',
