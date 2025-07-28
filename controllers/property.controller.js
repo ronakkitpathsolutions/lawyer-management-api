@@ -122,14 +122,24 @@ export const getPropertyById = asyncHandler(async (req, res) => {
 // Get property records by client ID with pagination and search (Admin only)
 export const getPropertiesByClientId = asyncHandler(async (req, res) => {
   const { client_id } = req.params;
-  const { page, limit, search, transaction_type, property_type, is_active } =
-    req.validatedQuery || req.query;
+  const {
+    page,
+    limit,
+    search,
+    sortBy,
+    sortOrder,
+    transaction_type,
+    property_type,
+    is_active,
+  } = req.validatedQuery || req.query;
 
   // Use default values if validatedQuery is not available
   const queryParams = {
     page: page || 1,
     limit: limit || 10,
     search: search || '',
+    sortBy: sortBy || 'createdAt',
+    sortOrder: sortOrder || 'DESC',
     transaction_type,
     property_type,
     is_active,
@@ -153,6 +163,8 @@ export const getPropertiesByClientId = asyncHandler(async (req, res) => {
     page: parseInt(queryParams.page),
     limit: parseInt(queryParams.limit),
     search: queryParams.search,
+    sortBy: queryParams.sortBy,
+    sortOrder: queryParams.sortOrder,
     client_id: parseInt(client_id),
     transaction_type: queryParams.transaction_type,
     property_type: queryParams.property_type,

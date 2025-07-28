@@ -467,6 +467,8 @@ Property.paginateWithSearch = async function ({
   page = 1,
   limit = 10,
   search = '',
+  sortBy = 'createdAt',
+  sortOrder = 'DESC',
   client_id,
   transaction_type,
   property_type,
@@ -481,14 +483,42 @@ Property.paginateWithSearch = async function ({
 
   // Add search conditions
   if (search) {
-    whereConditions[Op.or] = [
-      { property_name: { [Op.iLike]: `%${search}%` } },
-      { agent_name: { [Op.iLike]: `%${search}%` } },
-      { broker_company: { [Op.iLike]: `%${search}%` } },
-      { transaction_type: { [Op.iLike]: `%${search}%` } },
-      { property_type: { [Op.iLike]: `%${search}%` } },
-      { repair_details: { [Op.iLike]: `%${search}%` } },
+    const searchConditions = [];
+
+    // Text/STRING fields - use iLike for case-insensitive search
+    const textFields = [
+      'property_name',
+      'agent_name',
+      'broker_company',
+      'repair_details',
     ];
+
+    textFields.forEach(field => {
+      searchConditions.push({
+        [field]: { [Op.iLike]: `%${search}%` },
+      });
+    });
+
+    // TEXT field - transaction_type
+    searchConditions.push({
+      transaction_type: { [Op.iLike]: `%${search}%` },
+    });
+
+    // ENUM field - property_type (use exact match with Op.in for multiple values)
+    // For ENUM fields, we need to check if search term matches any of the possible values
+    if (TYPE_OF_PROPERTY_TEXTS && TYPE_OF_PROPERTY_TEXTS.length > 0) {
+      const matchingPropertyTypes = TYPE_OF_PROPERTY_TEXTS.filter(type =>
+        type.toLowerCase().includes(search.toLowerCase())
+      );
+
+      if (matchingPropertyTypes.length > 0) {
+        searchConditions.push({
+          property_type: { [Op.in]: matchingPropertyTypes },
+        });
+      }
+    }
+
+    whereConditions[Op.or] = searchConditions;
   }
 
   // Add filter conditions
@@ -508,11 +538,31 @@ Property.paginateWithSearch = async function ({
     whereConditions.is_active = is_active;
   }
 
+  // Validate sortBy field to prevent SQL injection
+  const allowedSortFields = [
+    'id',
+    'property_name',
+    'agent_name',
+    'broker_company',
+    'transaction_type',
+    'property_type',
+    'reservation_date',
+    'selling_price',
+    'deposit',
+    'createdAt',
+    'updatedAt',
+  ];
+
+  const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+  const validSortOrder = ['ASC', 'DESC'].includes(sortOrder.toUpperCase())
+    ? sortOrder.toUpperCase()
+    : 'DESC';
+
   const { count, rows } = await this.findAndCountAll({
     where: whereConditions,
     limit: parseInt(limit),
     offset: parseInt(offset),
-    order: [['createdAt', 'DESC']],
+    order: [[validSortBy, validSortOrder]],
     include,
     ...options,
   });
