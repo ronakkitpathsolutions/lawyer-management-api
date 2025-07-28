@@ -127,87 +127,31 @@ export const UpdateVisaSchema = VisaValidationSchema.partial();
 
 // Search visa validation schema
 export const SearchVisaSchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .default('1')
-    .transform(val => parseInt(val))
-    .refine(
-      val => !isNaN(val) && val > 0,
-      VALIDATION_MESSAGES.COMMON.PAGINATION.PAGE_INVALID
-    ),
-  limit: z
-    .string()
-    .optional()
-    .default('10')
-    .transform(val => parseInt(val))
-    .refine(
-      val => !isNaN(val) && val > 0 && val <= 100,
-      VALIDATION_MESSAGES.COMMON.PAGINATION.LIMIT_INVALID
-    ),
-  search: z
-    .string()
-    .optional()
-    .default('')
-    .transform(val => val.trim()),
-  client_id: z
-    .string()
-    .optional()
-    .transform(val => (val ? parseInt(val) : undefined))
-    .refine(
-      val => val === undefined || (!isNaN(val) && val > 0),
-      VALIDATION_MESSAGES.VISA.CLIENT_ID.INVALID
-    ),
-  existing_visa: z
-    .enum([...EXISTING_VISA, ''])
-    .optional()
-    .transform(val => (val === '' || val === undefined ? undefined : val))
-    .nullable(),
-  wished_visa: z
-    .enum([...WISHED_VISA, ''], {
-      errorMap: () => ({
-        message: VALIDATION_MESSAGES.VISA.WISHED_VISA.INVALID,
-      }),
-    })
-    .optional()
-    .transform(val => (val === '' ? undefined : val)),
-  is_active: z
-    .string()
-    .optional()
-    .transform(val => {
-      if (val === undefined || val === '') return undefined;
-      return val === 'true';
-    }),
+  page: z.number().int().min(1).optional().default(1),
+  limit: z.number().int().min(1).max(100).optional().default(10),
+  search: z.string().trim().optional(),
+  client_id: z.number().int().optional(),
+  existing_visa: z.enum(EXISTING_VISA).optional(),
+  wished_visa: z.enum(WISHED_VISA).optional(),
+  is_active: z.boolean().optional(),
   sortBy: z
-    .string()
+    .enum([
+      'id',
+      'client_id',
+      'existing_visa',
+      'wished_visa',
+      'latest_entry_date',
+      'existing_visa_expiry',
+      'intended_departure_date',
+      'created_by',
+      'is_active',
+      'createdAt',
+      'updatedAt',
+    ])
     .optional()
-    .default('createdAt')
-    .refine(
-      val =>
-        [
-          'id',
-          'client_id',
-          'existing_visa',
-          'wished_visa',
-          'latest_entry_date',
-          'existing_visa_expiry',
-          'intended_departure_date',
-          'created_by',
-          'is_active',
-          'createdAt',
-          'updatedAt',
-        ].includes(val),
-      'Invalid sortBy field'
-    ),
-  sortOrder: z
-    .string()
-    .optional()
-    .default('DESC')
-    .transform(val => val.toUpperCase())
-    .refine(
-      val => ['ASC', 'DESC'].includes(val),
-      'Invalid sortOrder, must be ASC or DESC'
-    ),
+    .default('createdAt'),
+  sortOrder: z.enum(['ASC', 'DESC']).optional().default('DESC'),
+  created_by: z.number().int().optional(),
 });
 
 // ID validation schema

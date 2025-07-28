@@ -3,7 +3,25 @@ import Visa from '../models/visa.model.js';
 import Client from '../models/client.model.js';
 import User from '../models/user.model.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
+import {
+  getWishedVisaLabel,
+  getExistingVisaLabel,
+} from '../utils/constants/enum-labels.js';
 import { Op, fn, col, literal } from 'sequelize';
+
+// Helper function to transform visa data with display labels
+const transformVisaWithLabels = visa => {
+  const visaData = visa.toJSON ? visa.toJSON() : visa;
+  return {
+    ...visaData,
+    existing_visa_label: visaData.existing_visa
+      ? getExistingVisaLabel(visaData.existing_visa)
+      : null,
+    wished_visa_label: visaData.wished_visa
+      ? getWishedVisaLabel(visaData.wished_visa)
+      : null,
+  };
+};
 
 // Create a new visa record (Admin only)
 export const createVisa = asyncHandler(async (req, res) => {
@@ -60,10 +78,20 @@ export const getAllVisas = asyncHandler(async (req, res) => {
     ],
   });
 
+  // Transform the result to include display labels
+  const transformedResult = {
+    ...result,
+    result: result.result.map(transformVisaWithLabels),
+  };
+
   return res
     .status(200)
     .json(
-      createApiResponse(true, 'Visa records retrieved successfully', result)
+      createApiResponse(
+        true,
+        'Visa records retrieved successfully',
+        transformedResult
+      )
     );
 }, 'Failed to retrieve visa records');
 
@@ -101,11 +129,14 @@ export const getVisaById = asyncHandler(async (req, res) => {
       );
   }
 
-  return res
-    .status(200)
-    .json(
-      createApiResponse(true, 'Visa record retrieved successfully', { visa })
-    );
+  // Transform the visa data to include display labels
+  const transformedVisa = transformVisaWithLabels(visa);
+
+  return res.status(200).json(
+    createApiResponse(true, 'Visa record retrieved successfully', {
+      visa: transformedVisa,
+    })
+  );
 }, 'Failed to retrieve visa record');
 
 // Get visa records by client ID with pagination and search (Admin only)

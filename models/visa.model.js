@@ -3,6 +3,10 @@ import { Visa as VisaValidation } from '../utils/validations/index.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 import { validateWithZod } from '../utils/helper.js';
 import { EXISTING_VISA, WISHED_VISA } from '../utils/constants/variables.js';
+import {
+  WISHED_VISA_SORT_ORDER,
+  EXISTING_VISA_SORT_ORDER,
+} from '../utils/constants/enum-labels.js';
 import sequelize from '../configs/database.js';
 
 const Visa = sequelize.define(
@@ -139,9 +143,9 @@ Visa.paginateWithSearch = async function ({
   page = 1,
   limit = 10,
   search = '',
-  client_id,
   sortBy = 'createdAt',
   sortOrder = 'DESC',
+  client_id,
   existing_visa,
   wished_visa,
   is_active,
@@ -205,11 +209,60 @@ Visa.paginateWithSearch = async function ({
     whereConditions.is_active = is_active;
   }
 
+  // Validate sortBy field to prevent SQL injection
+  const allowedSortFields = [
+    'id',
+    'client_id',
+    'existing_visa',
+    'wished_visa',
+    'latest_entry_date',
+    'existing_visa_expiry',
+    'intended_departure_date',
+    'created_by',
+    'is_active',
+    'createdAt',
+    'updatedAt',
+  ];
+
+  const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+  const validSortOrder = ['ASC', 'DESC'].includes(sortOrder.toUpperCase())
+    ? sortOrder.toUpperCase()
+    : 'DESC';
+
+  // For ENUM fields, use custom sorting based on display labels
+  let orderClause;
+  if (validSortBy === 'wished_visa') {
+    // Create CASE statement for custom sort order based on display labels
+    const caseStatements = WISHED_VISA_SORT_ORDER.map(
+      (value, index) => `WHEN wished_visa = '${value}' THEN ${index}`
+    ).join(' ');
+
+    orderClause = [
+      sequelize.literal(
+        `CASE ${caseStatements} ELSE 999 END ${validSortOrder}`
+      ),
+    ];
+  } else if (validSortBy === 'existing_visa') {
+    // Create CASE statement for custom sort order based on display labels
+    const caseStatements = EXISTING_VISA_SORT_ORDER.map(
+      (value, index) => `WHEN existing_visa = '${value}' THEN ${index}`
+    ).join(' ');
+
+    orderClause = [
+      sequelize.literal(
+        `CASE ${caseStatements} ELSE 999 END ${validSortOrder}`
+      ),
+    ];
+  } else {
+    // Regular sorting for non-ENUM fields
+    orderClause = [[validSortBy, validSortOrder]];
+  }
+
   const { count, rows } = await this.findAndCountAll({
     where: whereConditions,
     limit: parseInt(limit),
     offset: parseInt(offset),
-    order: [[sortBy, sortOrder]],
+    order: orderClause,
     include,
     ...options,
   });

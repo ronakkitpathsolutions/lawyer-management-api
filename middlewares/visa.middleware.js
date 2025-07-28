@@ -49,6 +49,9 @@ export const validateVisaSearchParams = (req, res, next) => {
     created_by: req.query.created_by
       ? parseInt(req.query.created_by, 10)
       : undefined,
+    // Ensure sortBy and sortOrder are properly passed through
+    sortBy: req.query.sortBy || undefined,
+    sortOrder: req.query.sortOrder || undefined,
   };
 
   const validation = Visa.validateSearchData
@@ -75,7 +78,26 @@ export const validateVisaSearchParams = (req, res, next) => {
 // Validate visa search/filter parameters (original version with client validation)
 export const validateVisaSearch = async (req, res, next) => {
   try {
-    const validationResult = Visa.validateSearchData(req.query);
+    // Convert query parameters to appropriate types
+    const queryData = {
+      ...req.query,
+      page: req.query.page ? parseInt(req.query.page, 10) : undefined,
+      limit: req.query.limit ? parseInt(req.query.limit, 10) : undefined,
+      client_id: req.query.client_id
+        ? parseInt(req.query.client_id, 10)
+        : undefined,
+      is_active: req.query.is_active
+        ? req.query.is_active === 'true'
+        : undefined,
+      created_by: req.query.created_by
+        ? parseInt(req.query.created_by, 10)
+        : undefined,
+      // Ensure sortBy and sortOrder are properly passed through
+      sortBy: req.query.sortBy || undefined,
+      sortOrder: req.query.sortOrder || undefined,
+    };
+
+    const validationResult = Visa.validateSearchData(queryData);
     if (!validationResult.success) {
       return res
         .status(400)
@@ -225,8 +247,8 @@ export const validateClientVisaSearch = async (req, res, next) => {
       page: req.query.page ? parseInt(req.query.page, 10) : 1,
       limit: req.query.limit ? parseInt(req.query.limit, 10) : 10,
       search: req.query.search || '',
-      sortOrder: req.query.sortOrder || 'DESC',
       sortBy: req.query.sortBy || 'createdAt',
+      sortOrder: req.query.sortOrder || 'DESC',
       existing_visa: req.query.existing_visa || undefined,
       wished_visa: req.query.wished_visa || undefined,
       is_active:
@@ -235,21 +257,23 @@ export const validateClientVisaSearch = async (req, res, next) => {
           : undefined,
     };
 
-    // Validate page and limit
-    if (queryData.page < 1) {
+    // Validate against the search schema
+    const validationResult = Visa.validateSearchData(queryData);
+    if (!validationResult.success) {
       return res
         .status(400)
-        .json(createApiResponse(false, 'Page must be greater than 0'));
-    }
-
-    if (queryData.limit < 1 || queryData.limit > 100) {
-      return res
-        .status(400)
-        .json(createApiResponse(false, 'Limit must be between 1 and 100'));
+        .json(
+          createApiResponse(
+            false,
+            VALIDATION_MESSAGES.SYSTEM.VALIDATION_FAILED,
+            null,
+            validationResult.errors
+          )
+        );
     }
 
     // Add validated data to request
-    req.validatedQuery = queryData;
+    req.validatedQuery = validationResult.data;
     next();
   } catch (error) {
     return res
