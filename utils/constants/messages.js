@@ -252,6 +252,18 @@ export const VALIDATION_MESSAGES = {
       INVALID: 'Latest entry date must be a valid date',
       REQUIRED: 'Latest entry date is required when available',
     },
+    RE_ENTRY_PERMIT: {
+      REQUIRED: 'Re-entry permit type is required',
+      INVALID: 'Invalid re-entry permit type',
+    },
+    INTENDED_VISA_RENEWAL_DATE: {
+      REQUIRED: 'Intended visa renewal date is required',
+      INVALID: 'Intended visa renewal date must be a valid date',
+    },
+    NEW_VISA_EXPIRY_DATE: {
+      REQUIRED: 'New visa expiry date is required',
+      INVALID: 'New visa expiry date must be a valid date',
+    },
     EXISTING_VISA_EXPIRY: {
       INVALID: 'Existing visa expiry date must be a valid date',
       PAST_DATE: 'Existing visa expiry date cannot be in the past',

@@ -2,7 +2,11 @@ import { DataTypes } from 'sequelize';
 import { Visa as VisaValidation } from '../utils/validations/index.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 import { validateWithZod } from '../utils/helper.js';
-import { EXISTING_VISA, WISHED_VISA } from '../utils/constants/variables.js';
+import {
+  EXISTING_VISA,
+  RE_ENTRY_TYPE,
+  WISHED_VISA,
+} from '../utils/constants/variables.js';
 import {
   WISHED_VISA_SORT_ORDER,
   EXISTING_VISA_SORT_ORDER,
@@ -40,6 +44,10 @@ const Visa = sequelize.define(
       type: DataTypes.ENUM(...EXISTING_VISA),
       allowNull: true,
     },
+    re_entry_permit: {
+      type: DataTypes.ENUM(...RE_ENTRY_TYPE),
+      allowNull: true,
+    },
     wished_visa: {
       type: DataTypes.ENUM(...WISHED_VISA),
       allowNull: false,
@@ -59,6 +67,24 @@ const Visa = sequelize.define(
       validate: {
         isDate: {
           msg: VALIDATION_MESSAGES.VISA.LATEST_ENTRY_DATE.INVALID,
+        },
+      },
+    },
+    intended_visa_renewal_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      validate: {
+        isDate: {
+          msg: VALIDATION_MESSAGES.VISA.INTENDED_VISA_RENEWAL_DATE.INVALID,
+        },
+      },
+    },
+    new_visa_expiry_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      validate: {
+        isDate: {
+          msg: VALIDATION_MESSAGES.VISA.NEW_VISA_EXPIRY_DATE.INVALID,
         },
       },
     },
@@ -216,7 +242,10 @@ Visa.paginateWithSearch = async function ({
     'existing_visa',
     'wished_visa',
     'latest_entry_date',
+    'new_visa_expiry_date',
+    'intended_visa_renewal_date',
     'existing_visa_expiry',
+    're_entry_permit',
     'intended_departure_date',
     'created_by',
     'is_active',

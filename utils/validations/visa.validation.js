@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import VALIDATION_MESSAGES from '../constants/messages.js';
-import { EXISTING_VISA, WISHED_VISA } from '../constants/variables.js';
+import {
+  EXISTING_VISA,
+  RE_ENTRY_TYPE,
+  WISHED_VISA,
+} from '../constants/variables.js';
 
 // Base visa validation schema
 const VisaValidationSchema = z.object({
@@ -23,6 +27,7 @@ const VisaValidationSchema = z.object({
         .positive(VALIDATION_MESSAGES.VISA.CLIENT_ID.INVALID)
     ),
   existing_visa: z.enum(EXISTING_VISA).optional().nullable(),
+  re_entry_permit: z.enum(RE_ENTRY_TYPE).optional().nullable(),
   wished_visa: z.enum(WISHED_VISA, {
     required_error: VALIDATION_MESSAGES.VISA.WISHED_VISA.REQUIRED,
     invalid_type_error: VALIDATION_MESSAGES.VISA.WISHED_VISA.INVALID,
@@ -56,6 +61,58 @@ const VisaValidationSchema = z.object({
     .refine(
       val => val === null || /^\d{4}-\d{2}-\d{2}$/.test(val),
       VALIDATION_MESSAGES.VISA.LATEST_ENTRY_DATE.INVALID
+    ),
+  intended_visa_renewal_date: z
+    .string()
+    .optional()
+    .nullable()
+    .transform(val => {
+      if (!val || val === '') return null;
+      // Check if it's already in YYYY-MM-DD format
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        return val;
+      }
+      // Check if it's in DD-MM-YYYY format and convert
+      if (/^\d{2}-\d{2}-\d{4}$/.test(val)) {
+        const [day, month, year] = val.split('-');
+        return `${year}-${month}-${day}`;
+      }
+      // Check if it's in DD/MM/YYYY format and convert
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+        const [day, month, year] = val.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      return val;
+    })
+    .refine(
+      val => val === null || /^\d{4}-\d{2}-\d{2}$/.test(val),
+      VALIDATION_MESSAGES.VISA.INTENDED_VISA_RENEWAL_DATE.INVALID
+    ),
+  new_visa_expiry_date: z
+    .string()
+    .optional()
+    .nullable()
+    .transform(val => {
+      if (!val || val === '') return null;
+      // Check if it's already in YYYY-MM-DD format
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        return val;
+      }
+      // Check if it's in DD-MM-YYYY format and convert
+      if (/^\d{2}-\d{2}-\d{4}$/.test(val)) {
+        const [day, month, year] = val.split('-');
+        return `${year}-${month}-${day}`;
+      }
+      // Check if it's in DD/MM/YYYY format and convert
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+        const [day, month, year] = val.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      return val;
+    })
+    .refine(
+      val => val === null || /^\d{4}-\d{2}-\d{2}$/.test(val),
+      VALIDATION_MESSAGES.VISA.NEW_VISA_EXPIRY_DATE.INVALID
     ),
   existing_visa_expiry: z
     .string()
@@ -133,6 +190,7 @@ export const SearchVisaSchema = z.object({
   client_id: z.number().int().optional(),
   existing_visa: z.enum(EXISTING_VISA).optional(),
   wished_visa: z.enum(WISHED_VISA).optional(),
+  re_entry_permit: z.enum(RE_ENTRY_TYPE).optional(),
   is_active: z.boolean().optional(),
   sortBy: z
     .enum([
@@ -141,6 +199,9 @@ export const SearchVisaSchema = z.object({
       'existing_visa',
       'wished_visa',
       'latest_entry_date',
+      'intended_visa_renewal_date',
+      'new_visa_expiry_date',
+      're_entry_permit',
       'existing_visa_expiry',
       'intended_departure_date',
       'created_by',

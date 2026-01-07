@@ -20,6 +20,8 @@ export const WISHED_VISA = [
   'ltr_work_from_thailand_professional',
 ];
 
+export const RE_ENTRY_TYPE = ['single', 'multiple', 'not_required'];
+
 export const EXISTING_VISA = [
   'entry_stamp_30_day',
   'entry_stamp_60_day',
