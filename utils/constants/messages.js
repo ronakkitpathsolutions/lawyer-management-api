@@ -465,6 +465,9 @@ export const VALIDATION_MESSAGES = {
       INVALID: 'Land lease agreement must be a valid URL',
       TOO_LONG: 'Land lease agreement URL must not exceed 500 characters',
     },
+    REMARKS: {
+      TOO_LONG: 'Remarks must not exceed 1500 characters',
+    },
     GENERAL: {
       NOT_FOUND: 'Property record not found',
       ALREADY_EXISTS: 'Property record already exists',

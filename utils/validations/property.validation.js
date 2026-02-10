@@ -408,6 +408,16 @@ const PropertyValidationSchema = z
         if (!val || val === '') return null;
         return val;
       }),
+    remarks: z
+      .string()
+      .max(1500, VALIDATION_MESSAGES.PROPERTY.REMARKS.TOO_LONG)
+      .trim()
+      .optional()
+      .nullable()
+      .transform(val => {
+        if (!val || val === '') return null;
+        return val;
+      }),
     is_active: z.boolean().optional().default(true),
   })
   .refine(
@@ -454,19 +464,22 @@ export const SearchPropertySchema = z.object({
   page: z.number().int().min(1).optional().default(1),
   limit: z.number().int().min(1).max(100).optional().default(10),
   search: z.string().trim().optional(),
-  sortBy: z.enum([
-    'id',
-    'property_name',
-    'agent_name',
-    'broker_company',
-    'transaction_type', 
-    'property_type',
-    'reservation_date',
-    'selling_price',
-    'deposit',
-    'createdAt',
-    'updatedAt'
-  ]).optional().default('createdAt'),
+  sortBy: z
+    .enum([
+      'id',
+      'property_name',
+      'agent_name',
+      'broker_company',
+      'transaction_type',
+      'property_type',
+      'reservation_date',
+      'selling_price',
+      'deposit',
+      'createdAt',
+      'updatedAt',
+    ])
+    .optional()
+    .default('createdAt'),
   sortOrder: z.enum(['ASC', 'DESC']).optional().default('DESC'),
   client_id: z.number().int().optional(),
   transaction_type: z.string().optional(),

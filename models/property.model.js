@@ -404,6 +404,16 @@ const Property = sequelize.define(
         },
       },
     },
+    remarks: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      validate: {
+        len: {
+          args: [0, 1500],
+          msg: VALIDATION_MESSAGES.PROPERTY.REMARKS.TOO_LONG,
+        },
+      },
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: false,
