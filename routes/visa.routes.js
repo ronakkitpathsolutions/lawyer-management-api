@@ -8,6 +8,7 @@ import {
   deleteVisa,
   toggleVisaStatus,
   getVisaStats,
+  exportVisasExcel,
 } from '../controllers/visa.controller.js';
 import {
   validateCreateVisa,
@@ -42,6 +43,8 @@ authRoutes.get(
   getVisasByClientId
 );
 
+// GET /api/visas/export - Export visa records to Excel
+authRoutes.get('/export', exportVisasExcel);
 // GET /api/visas/:id - Get visa record by ID
 authRoutes.get('/:id', validateVisaId, getVisaById);
 

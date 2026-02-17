@@ -1,4 +1,11 @@
-import { createApiResponse, asyncHandler } from '../utils/helper.js';
+import ExcelJS from 'exceljs';
+import {
+  createApiResponse,
+  asyncHandler,
+  WISHED_VISA_MAP,
+  EXISTING_VISA_MAP,
+  RE_ENTRY_PERMIT_TEXT_OBJECT,
+} from '../utils/helper.js';
 import Visa from '../models/visa.model.js';
 import Client from '../models/client.model.js';
 import User from '../models/user.model.js';
@@ -379,3 +386,83 @@ export const getVisaStats = asyncHandler(async (req, res) => {
     })
   );
 }, 'Failed to retrieve visa statistics');
+
+// export excel report function here if needed in the future
+export const exportVisasExcel = asyncHandler(async (req, res) => {
+  // Fetch ALL records (no pagination for export)
+  const result = await Visa.paginateWithSearch({
+    page: 1,
+    limit: 1000000, // export all
+    include: [
+      {
+        model: Client,
+        as: 'client',
+        attributes: ['name', 'family_name', 'email', 'nationality'],
+      },
+      {
+        model: User,
+        as: 'creator',
+        attributes: ['name'],
+      },
+    ],
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Visas');
+
+  worksheet.columns = [
+    { header: 'Visa ID', key: 'id', width: 10 },
+    { header: 'Client Name', key: 'client_name', width: 25 },
+    { header: 'Email', key: 'email', width: 25 },
+    { header: 'Nationality', key: 'nationality', width: 20 },
+    { header: 'Existing Visa', key: 'existing_visa', width: 50 },
+    { header: 'Wished Visa', key: 'wished_visa', width: 50 },
+    { header: 'Re Entry Permit', key: 're_entry_permit', width: 20 },
+    { header: 'Existing Visa Expiry', key: 'existing_visa_expiry', width: 20 },
+    { header: 'New Visa Expiry', key: 'new_visa_expiry_date', width: 20 },
+    { header: 'Status', key: 'is_active', width: 15 },
+  ];
+
+  const rows = result.result.map(visa => ({
+    id: visa.id,
+    client_name: visa.client?.name || '',
+    family_name: visa.client?.family_name || '',
+    email: visa.client?.email,
+    nationality: visa.client?.nationality,
+    existing_visa: EXISTING_VISA_MAP[visa.existing_visa],
+    wished_visa: WISHED_VISA_MAP[visa.wished_visa],
+    re_entry_permit: RE_ENTRY_PERMIT_TEXT_OBJECT[visa.re_entry_permit],
+    existing_visa_expiry: visa.existing_visa_expiry,
+    new_visa_expiry_date: visa.new_visa_expiry_date,
+    is_active: visa.is_active ? 'Active' : 'Inactive',
+  }));
+
+  worksheet.addRows(rows);
+
+  // Bold header
+  worksheet.getRow(1).font = { bold: true };
+
+  // Freeze header
+  worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+  // Auto filter
+  worksheet.autoFilter = {
+    from: 'A1',
+    to: 'K1',
+  };
+
+  // Date formatting
+  worksheet.getColumn('existing_visa_expiry').numFmt = 'yyyy-mm-dd';
+  worksheet.getColumn('new_visa_expiry_date').numFmt = 'yyyy-mm-dd';
+  worksheet.getColumn('createdAt').numFmt = 'yyyy-mm-dd hh:mm';
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
+
+  res.setHeader('Content-Disposition', 'attachment; filename=visas.xlsx');
+
+  await workbook.xlsx.write(res);
+  res.end();
+}, 'Failed to export visa records');
