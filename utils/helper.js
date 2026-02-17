@@ -475,3 +475,6 @@ export const HOUSE_TITLE_MAP = {
   official_house_sale_and_purchase_agreement:
     'Official House Sale and Purchase Agreement',
 };
+
+export const capitalize = (str = '') =>
+  str.charAt(0).toUpperCase() + str.slice(1);

@@ -19,6 +19,7 @@ import {
   DECLARED_LAND_OFFICE_PRICE_MAP,
   LAND_TITLE_MAP,
   HOUSE_TITLE_MAP,
+  capitalize,
 } from '../utils/helper.js';
 import { deleteS3File } from '../utils/s3-helper.js';
 import Property from '../models/property.model.js';
@@ -459,7 +460,7 @@ export const exportPropertiesExcel = asyncHandler(async (req, res) => {
       {
         model: Client,
         as: 'client',
-        attributes: ['id', 'name', 'family_name', 'email', 'nationality'],
+        attributes: ['name', 'family_name', 'email', 'nationality'],
       },
       {
         model: User,
@@ -475,19 +476,17 @@ export const exportPropertiesExcel = asyncHandler(async (req, res) => {
   const attributes = Object.keys(Property.rawAttributes);
 
   // Optional: exclude some fields if needed
-  const excludedFields = ['createdAt', 'updatedAt'];
+  const excludedFields = ['createdAt', 'updatedAt', 'client_id'];
   const filteredAttributes = attributes.filter(
     field => !excludedFields.includes(field)
   );
 
   const formatHeader = field =>
-    field === 'client_id'
-      ? 'Client Name'
-      : field
-          .replace(/_/g, ' ')
-          .replace(/([A-Z])/g, ' $1')
-          .replace(/\b\w/g, c => c.toUpperCase())
-          .trim();
+    field
+      .replace(/_/g, ' ')
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/\b\w/g, c => c.toUpperCase())
+      .trim();
 
   worksheet.columns = filteredAttributes.map(field => ({
     header: formatHeader(field),
@@ -497,11 +496,14 @@ export const exportPropertiesExcel = asyncHandler(async (req, res) => {
 
   const formattedRows = result.result.map(property => ({
     id: property.id,
-    client_name: property.client?.name || '',
     property_name: property.property_name || '',
     agent_name: property.createdBy?.name || '',
     broker_company: property.broker_company || '',
-    transaction_type: TYPE_OF_TRANSACTION_MAP[property.transaction_type] || '',
+    transaction_type:
+      String(property.transaction_type)
+        .split(',')
+        .map(type => capitalize(type.trim()))
+        .join(', ') || '',
     property_type: TYPE_OF_PROPERTY_MAP[property.property_type] || '',
     reservation_date: property.reservation_date || '',
     intended_closing_date:
