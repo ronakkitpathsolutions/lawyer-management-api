@@ -6,7 +6,7 @@ export const ENV = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   DATABASE_URL:
     process.env.DATABASE_URL ||
-    'postgresql://username:password@localhost:5432/database_name',
+    'postgresql://postgres:ips12345@localhost:5432/lawyer-management',
   JWT_SECRET: process.env.JWT_SECRET || 'your_jwt_secret',
   JWT_EXPIRATION: process.env.JWT_EXPIRATION || '1h',
   HASH_SALT_ROUNDS: parseInt(process.env.HASH_SALT_ROUNDS, 10) || 10,

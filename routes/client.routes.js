@@ -5,6 +5,7 @@ import {
   getClientById,
   updateClient,
   deleteClient,
+  deleteMember,
   toggleClientStatus,
   getClientStats,
 } from '../controllers/client.controller.js';
@@ -46,6 +47,9 @@ clientRoutes.patch(
 
 // DELETE /api/clients/:id - Delete client
 clientRoutes.delete('/:id', validateClientId, deleteClient);
+
+// DELETE /api/members/:id - Delete member
+clientRoutes.delete('/members/:id', validateClientId, deleteMember);
 
 // PATCH /api/clients/:id/toggle-status - Toggle client active status
 clientRoutes.patch('/:id/toggle-status', validateClientId, toggleClientStatus);

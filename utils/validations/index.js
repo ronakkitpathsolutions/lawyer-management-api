@@ -3,6 +3,7 @@ import * as ClientValidation from './client.validation.js';
 import * as CommonValidation from './common.validation.js';
 import * as VisaValidation from './visa.validation.js';
 import * as PropertyValidation from './property.validation.js';
+import * as RelationshipValidation from './relationship.validation.js';
 
 export const User = {
   schemas: {
@@ -52,6 +53,21 @@ export const Visa = {
     update: VisaValidation.validateUpdateVisa,
     search: VisaValidation.validateVisaSearch,
     id: VisaValidation.validateVisaId,
+  },
+};
+
+export const Relationship = {
+  schemas: {
+    create: RelationshipValidation.CreateRelationshipSchema,
+    update: RelationshipValidation.UpdateRelationshipSchema,
+    search: RelationshipValidation.SearchRelationshipSchema,
+    id: RelationshipValidation.RelationshipIdSchema,
+  },
+  validate: {
+    create: RelationshipValidation.validateCreateRelationship,
+    update: RelationshipValidation.validateUpdateRelationship,
+    search: RelationshipValidation.validateSearchRelationship,
+    id: RelationshipValidation.validateRelationshipId,
   },
 };
 

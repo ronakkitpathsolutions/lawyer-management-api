@@ -231,6 +231,35 @@ export const VALIDATION_MESSAGES = {
     },
   },
 
+  // Relationship validation messages
+  RELATIONSHIP: {
+    CLIENT_ID: {
+      REQUIRED: 'Client ID is required',
+      INVALID: 'Client ID must be a valid integer',
+      NOT_FOUND: 'Client not found',
+    },
+    MEMBER_NAME: {
+      REQUIRED: 'Member name is required',
+      TOO_SHORT: 'Member name must be at least 2 characters long',
+      TOO_LONG: 'Member name must not exceed 100 characters',
+      EMPTY: 'Member name cannot be empty',
+      INVALID: 'Member name contains invalid characters',
+    },
+    RELATIONSHIP: {
+      INVALID:
+        'Relationship must be one of: spouse, child, parent, sibling, dependent, other',
+    },
+    GENERAL: {
+      NOT_FOUND: 'Relationship record not found',
+      ALREADY_EXISTS: 'Relationship record already exists',
+      CREATION_FAILED: 'Failed to create relationship record',
+      UPDATE_FAILED: 'Failed to update relationship record',
+      DELETE_FAILED: 'Failed to delete relationship record',
+      UNAUTHORIZED: 'Unauthorized access',
+      FORBIDDEN: 'Access forbidden - Admin access required',
+    },
+  },
+
   // Visa validation messages
   VISA: {
     CLIENT_ID: {

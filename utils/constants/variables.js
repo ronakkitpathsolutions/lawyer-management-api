@@ -87,6 +87,15 @@ export const FURNITURE_INCLUDED_TEXTS = [
   'all_furniture_except_personal_items',
 ];
 
+export const RELATIONSHIP_TEXTS = [
+  'spouse',
+  'child',
+  'parent',
+  'sibling',
+  'dependent',
+  'other',
+];
+
 export const COST_SHARING_TEXTS = [
   'buyer_only',
   'seller_only',

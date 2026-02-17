@@ -3,9 +3,22 @@ import User from './user.model.js';
 import Client from './client.model.js';
 import Visa from './visa.model.js';
 import Property from './property.model.js';
+import Relationship from './relationship.model.js';
 
 // Define associations
 Client.associate({ User });
+
+// One client can have many family members
+Client.hasMany(Relationship, {
+  foreignKey: 'client_id',
+  as: 'relationships',
+});
+
+// Each relationship belongs to one client
+Relationship.belongsTo(Client, {
+  foreignKey: 'client_id',
+  as: 'client',
+});
 
 // Define Visa associations
 Visa.belongsTo(Client, {

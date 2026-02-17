@@ -140,6 +140,98 @@ const ClientValidationSchema = z.object({
     .optional()
     .nullable(),
   is_active: z.boolean().optional().default(true),
+  relationships: z
+    .array(
+      z.object({
+        member_name: z
+          .string()
+          .min(2, VALIDATION_MESSAGES.RELATIONSHIP.MEMBER_NAME.TOO_SHORT)
+          .max(100, VALIDATION_MESSAGES.RELATIONSHIP.MEMBER_NAME.TOO_LONG)
+          .trim(),
+        member_email: z
+          .string()
+          .email(VALIDATION_MESSAGES.CLIENT.EMAIL.INVALID)
+          .max(150, VALIDATION_MESSAGES.CLIENT.EMAIL.TOO_LONG)
+          .toLowerCase()
+          .trim(),
+        relationship: z
+          .enum(
+            ['spouse', 'child', 'parent', 'sibling', 'dependent', 'other'],
+            {
+              errorMap: () => ({
+                message:
+                  VALIDATION_MESSAGES.RELATIONSHIP.RELATIONSHIP.INVALID ||
+                  'Invalid relationship',
+              }),
+            }
+          )
+          .optional()
+          .nullable(),
+        date_of_birth: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/, VALIDATION_MESSAGES.CLIENT.DOB.INVALID)
+          .refine(val => {
+            const date = new Date(val);
+            const today = new Date();
+            return date < today;
+          }, VALIDATION_MESSAGES.CLIENT.DOB.FUTURE_DATE)
+          .optional()
+          .nullable(),
+        contact_number: z
+          .string()
+          .min(10, VALIDATION_MESSAGES.CLIENT.PHONE_NUMBER.TOO_SHORT)
+          .max(15, VALIDATION_MESSAGES.CLIENT.PHONE_NUMBER.TOO_LONG)
+          .regex(
+            /^[\+]?[1-9][\d]{0,15}$/,
+            VALIDATION_MESSAGES.CLIENT.PHONE_NUMBER.INVALID
+          )
+          .optional()
+          .nullable(),
+        nationality: z
+          .string()
+          .min(2, VALIDATION_MESSAGES.CLIENT.NATIONALITY.INVALID)
+          .max(50, VALIDATION_MESSAGES.CLIENT.NATIONALITY.INVALID)
+          .trim()
+          .refine(
+            val => val.length > 0,
+            VALIDATION_MESSAGES.CLIENT.NATIONALITY.REQUIRED
+          )
+          .optional()
+          .nullable(),
+        passport_number: z
+          .string()
+          .min(6, VALIDATION_MESSAGES.CLIENT.PASSPORT_NUMBER.TOO_SHORT)
+          .max(20, VALIDATION_MESSAGES.CLIENT.PASSPORT_NUMBER.TOO_LONG)
+          .regex(
+            /^[A-Z0-9]+$/,
+            VALIDATION_MESSAGES.CLIENT.PASSPORT_NUMBER.INVALID
+          )
+          .transform(val => val.toUpperCase())
+          .optional()
+          .nullable(),
+        has_yellow_or_pink_card: z
+          .boolean({
+            errorMap: () => ({
+              message: VALIDATION_MESSAGES.CLIENT.HAS_CARD.INVALID,
+            }),
+          })
+          .optional()
+          .nullable(),
+        has_bought_property_in_thailand: z
+          .boolean({
+            errorMap: () => ({
+              message: VALIDATION_MESSAGES.CLIENT.HAS_PROPERTY.INVALID,
+            }),
+          })
+          .optional()
+          .nullable(),
+        created_by: z.number().int().optional(), // Set automatically from authenticated user
+      })
+    )
+    .optional()
+    .nullable(),
+  created_by: z.number().int().optional(), // Set automatically from authenticated user
+  updated_by: z.number().int().optional(), // Set automatically from authenticated user
 });
 
 // Schema for client creation (all required fields)

@@ -1,6 +1,7 @@
 import { createApiResponse, asyncHandler } from '../utils/helper.js';
 import Client from '../models/client.model.js';
 import User from '../models/user.model.js';
+import Relationship from '../models/relationship.model.js';
 import VALIDATION_MESSAGES from '../utils/constants/messages.js';
 import { Op, fn, col, literal } from 'sequelize';
 
@@ -56,6 +57,22 @@ export const createClient = asyncHandler(async (req, res) => {
             as: 'creator',
             attributes: ['id', 'name', 'email'],
           },
+          {
+            model: Relationship,
+            as: 'relationships',
+            attributes: [
+              'id',
+              'member_name',
+              'member_email',
+              'relationship',
+              'date_of_birth',
+              'contact_number',
+              'nationality',
+              'passport_number',
+              'has_yellow_or_pink_card',
+              'has_bought_property_in_thailand',
+            ],
+          },
         ],
       }),
     })
@@ -73,6 +90,22 @@ export const getAllClients = asyncHandler(async (req, res) => {
         model: User,
         as: 'creator',
         attributes: ['id', 'name', 'email'],
+      },
+      {
+        model: Relationship,
+        as: 'relationships',
+        attributes: [
+          'id',
+          'member_name',
+          'member_email',
+          'relationship',
+          'date_of_birth',
+          'contact_number',
+          'nationality',
+          'passport_number',
+          'has_yellow_or_pink_card',
+          'has_bought_property_in_thailand',
+        ],
       },
     ],
   });
@@ -92,6 +125,22 @@ export const getClientById = asyncHandler(async (req, res) => {
         model: User,
         as: 'creator',
         attributes: ['id', 'name', 'email'],
+      },
+      {
+        model: Relationship,
+        as: 'relationships',
+        attributes: [
+          'id',
+          'member_name',
+          'member_email',
+          'relationship',
+          'date_of_birth',
+          'contact_number',
+          'nationality',
+          'passport_number',
+          'has_yellow_or_pink_card',
+          'has_bought_property_in_thailand',
+        ],
       },
     ],
   });
@@ -113,6 +162,7 @@ export const getClientById = asyncHandler(async (req, res) => {
 export const updateClient = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { validatedData } = req;
+  const createdBy = req.user.id;
 
   // Find client
   const client = await Client.findByPk(id);
@@ -137,6 +187,32 @@ export const updateClient = asyncHandler(async (req, res) => {
           )
         );
     }
+  }
+
+  // update members in Relationship table if provided
+  if (
+    validatedData?.relationships &&
+    Array.isArray(validatedData.relationships)
+  ) {
+    // delete existing relationships for this client
+    await Relationship.destroy({ where: { client_id: id } });
+
+    // create new relationships
+    const relationshipsData = validatedData.relationships.map(member => ({
+      client_id: id || member.client_id, // use existing client_id or fallback to member's client_id if provided
+      member_name: member.member_name,
+      member_email: member.member_email,
+      relationship: member.relationship,
+      date_of_birth: member.date_of_birth,
+      contact_number: member.contact_number,
+      nationality: member.nationality,
+      passport_number: member.passport_number,
+      has_yellow_or_pink_card: member.has_yellow_or_pink_card,
+      has_bought_property_in_thailand: member.has_bought_property_in_thailand,
+      created_by: createdBy,
+    }));
+
+    await Relationship.bulkCreate(relationshipsData);
   }
 
   // Check if passport number is being updated and if it already exists
@@ -170,6 +246,21 @@ export const updateClient = asyncHandler(async (req, res) => {
         as: 'creator',
         attributes: ['id', 'name', 'email'],
       },
+      {
+        model: Relationship,
+        as: 'relationships',
+        attributes: [
+          'id',
+          'member_name',
+          'relationship',
+          'date_of_birth',
+          'contact_number',
+          'nationality',
+          'passport_number',
+          'has_yellow_or_pink_card',
+          'has_bought_property_in_thailand',
+        ],
+      },
     ],
   });
 
@@ -199,6 +290,29 @@ export const deleteClient = asyncHandler(async (req, res) => {
     .status(200)
     .json(createApiResponse(true, 'Client deleted successfully'));
 }, 'Failed to delete client');
+
+// Delete member (Admin only)
+export const deleteMember = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const member = await Relationship.findByPk(id);
+  if (!member) {
+    return res
+      .status(404)
+      .json(
+        createApiResponse(
+          false,
+          VALIDATION_MESSAGES.RELATIONSHIP.GENERAL.NOT_FOUND
+        )
+      );
+  }
+
+  await member.destroy();
+
+  return res
+    .status(200)
+    .json(createApiResponse(true, 'Member deleted successfully'));
+}, 'Failed to delete member');
 
 // Toggle client active status (Admin only)
 export const toggleClientStatus = asyncHandler(async (req, res) => {
