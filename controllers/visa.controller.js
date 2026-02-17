@@ -429,9 +429,9 @@ export const exportVisasExcel = asyncHandler(async (req, res) => {
     family_name: visa.client?.family_name || '',
     email: visa.client?.email,
     nationality: visa.client?.nationality,
-    existing_visa: EXISTING_VISA_MAP[visa.existing_visa],
-    wished_visa: WISHED_VISA_MAP[visa.wished_visa],
-    re_entry_permit: RE_ENTRY_PERMIT_TEXT_OBJECT[visa.re_entry_permit],
+    existing_visa: EXISTING_VISA_MAP?.[visa.existing_visa],
+    wished_visa: WISHED_VISA_MAP?.[visa.wished_visa],
+    re_entry_permit: RE_ENTRY_PERMIT_TEXT_OBJECT?.[visa.re_entry_permit],
     existing_visa_expiry: visa.existing_visa_expiry,
     new_visa_expiry_date: visa.new_visa_expiry_date,
     is_active: visa.is_active ? 'Active' : 'Inactive',
@@ -444,10 +444,17 @@ export const exportVisasExcel = asyncHandler(async (req, res) => {
 
   // Freeze header
   worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+  const lastColumnLetter = worksheet.getColumn(worksheet.columnCount).letter;
+  // Auto filter
+  worksheet.autoFilter = {
+    from: 'A1',
+    to: `${lastColumnLetter}1`,
+  };
+
   // Date formatting
   worksheet.getColumn('existing_visa_expiry').numFmt = 'yyyy-mm-dd';
   worksheet.getColumn('new_visa_expiry_date').numFmt = 'yyyy-mm-dd';
-  worksheet.getColumn('createdAt').numFmt = 'yyyy-mm-dd hh:mm';
 
   res.setHeader(
     'Content-Type',
