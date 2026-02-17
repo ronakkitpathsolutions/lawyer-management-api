@@ -8,6 +8,7 @@ import {
   deleteMember,
   toggleClientStatus,
   getClientStats,
+  exportClientExcel,
 } from '../controllers/client.controller.js';
 import {
   validateCreateClient,
@@ -33,6 +34,9 @@ clientRoutes.get('/', validateClientSearch, getAllClients);
 
 // POST /api/clients - Create a new client
 clientRoutes.post('/create', validateCreateClient, createClient);
+
+// GET /api/visas/export - Export visa records to Excel
+clientRoutes.get('/export/:client_id', exportClientExcel);
 
 // GET /api/clients/:id - Get client by ID
 clientRoutes.get('/:id', validateClientId, getClientById);

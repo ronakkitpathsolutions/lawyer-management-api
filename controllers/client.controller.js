@@ -1,4 +1,9 @@
-import { createApiResponse, asyncHandler } from '../utils/helper.js';
+import {
+  createApiResponse,
+  asyncHandler,
+  MARITAL_STATUS_MAP,
+} from '../utils/helper.js';
+import ExcelJS from 'exceljs';
 import Client from '../models/client.model.js';
 import User from '../models/user.model.js';
 import Relationship from '../models/relationship.model.js';
@@ -394,3 +399,125 @@ export const getClientStats = asyncHandler(async (req, res) => {
     })
   );
 }, 'Failed to retrieve client statistics');
+
+export const exportClientExcel = asyncHandler(async (req, res) => {
+  const { client_id } = req.params;
+  const result = await Client.findByPk(client_id, {
+    include: [
+      {
+        model: User,
+        as: 'creator',
+        attributes: ['id', 'name', 'email'],
+      },
+      {
+        model: Relationship,
+        as: 'relationships',
+        attributes: [
+          'id',
+          'member_name',
+          'member_email',
+          'relationship',
+          'date_of_birth',
+          'contact_number',
+          'nationality',
+          'passport_number',
+          'has_yellow_or_pink_card',
+          'has_bought_property_in_thailand',
+        ],
+      },
+    ],
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Clients');
+
+  const headers = [
+    { header: 'ID', key: 'id', width: 10 },
+    { header: 'Name', key: 'name', width: 25 },
+    { header: 'Family Name', key: 'family_name', width: 30 },
+    { header: 'Email', key: 'email', width: 25 },
+    { header: 'Passport Number', key: 'passport_number', width: 30 },
+    { header: 'Nationality', key: 'nationality', width: 20 },
+    { header: 'Date of Birth', key: 'date_of_birth', width: 20 },
+    { header: 'Age', key: 'age', width: 10 },
+    { header: 'Phone Number', key: 'phone_number', width: 20 },
+    { header: 'Current Address', key: 'current_address', width: 50 },
+    { header: 'Address In Thailand', key: 'address_in_thailand', width: 50 },
+    { header: 'Whatsapp', key: 'whatsapp', width: 25 },
+    { header: 'Line', key: 'line', width: 25 },
+    { header: 'Marital Status', key: 'marital_status', width: 25 },
+    { header: 'Father Name', key: 'father_name', width: 30 },
+    { header: 'Mother Name', key: 'mother_name', width: 30 },
+    {
+      header: 'Married to Thai and Registered?',
+      key: 'married_to_thai_and_registered',
+      width: 30,
+    },
+    {
+      header: 'Has Bought Property in Thailand?',
+      key: 'has_bought_property_in_thailand',
+      width: 30,
+    },
+    {
+      header: 'Status',
+      key: 'is_active',
+      width: 15,
+    },
+  ];
+
+  worksheet.columns = headers;
+
+  const rows = [
+    {
+      id: result.id,
+      name: result.name || '',
+      family_name: result.family_name || '',
+      email: result.email || '',
+      passport_number: result.passport_number || '',
+      nationality: result.nationality || '',
+      date_of_birth: result.date_of_birth || '',
+      age: result.age || '',
+      phone_number: result.phone_number || '',
+      current_address: result.current_address || '',
+      address_in_thailand: result.address_in_thailand || '',
+      whatsapp: result.whatsapp || '',
+      line: result.line || '',
+      marital_status: MARITAL_STATUS_MAP[result.marital_status] || '',
+      father_name: result.father_name || '',
+      mother_name: result.mother_name || '',
+      married_to_thai_and_registered:
+        result.married_to_thai_and_registered || '',
+      has_bought_property_in_thailand:
+        result.has_bought_property_in_thailand || '',
+      is_active: result.is_active ? 'Active' : 'Inactive',
+    },
+  ];
+
+  worksheet.addRows(rows);
+
+  // Bold header
+  worksheet.getRow(1).font = { bold: true };
+
+  // Freeze header
+  worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+  const lastColumnLetter = worksheet.getColumn(worksheet.columnCount).letter;
+  // Auto filter
+  worksheet.autoFilter = {
+    from: 'A1',
+    to: `${lastColumnLetter}1`,
+  };
+
+  // Date formatting
+  worksheet.getColumn('date_of_birth').numFmt = 'yyyy-mm-dd';
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
+
+  res.setHeader('Content-Disposition', 'attachment; filename=visas.xlsx');
+
+  await workbook.xlsx.write(res);
+  res.end();
+}, 'Failed to export client record');

@@ -478,3 +478,11 @@ export const HOUSE_TITLE_MAP = {
 
 export const capitalize = (str = '') =>
   str.charAt(0).toUpperCase() + str.slice(1);
+
+export const MARITAL_STATUS_MAP = {
+  single: 'Single',
+  married: 'Married',
+  common_law: 'Common Law',
+  divorced: 'Divorced',
+  widowed: 'Widowed',
+};
