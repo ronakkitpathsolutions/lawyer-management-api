@@ -444,13 +444,6 @@ export const exportVisasExcel = asyncHandler(async (req, res) => {
 
   // Freeze header
   worksheet.views = [{ state: 'frozen', ySplit: 1 }];
-
-  // Auto filter
-  worksheet.autoFilter = {
-    from: 'A1',
-    to: 'K1',
-  };
-
   // Date formatting
   worksheet.getColumn('existing_visa_expiry').numFmt = 'yyyy-mm-dd';
   worksheet.getColumn('new_visa_expiry_date').numFmt = 'yyyy-mm-dd';
