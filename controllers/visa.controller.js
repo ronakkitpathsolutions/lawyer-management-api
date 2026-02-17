@@ -390,9 +390,11 @@ export const getVisaStats = asyncHandler(async (req, res) => {
 // export excel report function here if needed in the future
 export const exportVisasExcel = asyncHandler(async (req, res) => {
   // Fetch ALL records (no pagination for export)
+  const { client_id } = req.params;
   const result = await Visa.paginateWithSearch({
     page: 1,
     limit: 1000000, // export all
+    client_id: parseInt(client_id),
     include: [
       {
         model: Client,

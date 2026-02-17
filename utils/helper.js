@@ -318,3 +318,160 @@ export const RE_ENTRY_PERMIT_TEXT_OBJECT = {
   multiple: 'Multiple',
   not_required: 'Not Required',
 };
+
+export const PROPERTY_EXPORT_COLUMN_WIDTHS = {
+  id: 10,
+  client_id: 12,
+  property_name: 30,
+  agent_name: 25,
+  broker_company: 28,
+  transaction_type: 20,
+  property_type: 20,
+
+  reservation_date: 18,
+  intended_closing_date: 22,
+  intended_closing_date_specific: 26,
+  handover_date: 18,
+
+  selling_price: 18,
+  deposit: 15,
+  intermediary_payment: 20,
+  closing_payment: 18,
+
+  acceptable_method_of_payment: 30,
+  place_of_payment: 25,
+
+  property_condition: 22,
+  house_warranty: 18,
+  warranty_condition: 25,
+  warranty_term: 18,
+  furniture_included: 20,
+
+  transfer_fee: 18,
+  withholding_tax: 18,
+  business_tax: 18,
+  lease_registration_fee: 22,
+  mortgage_fee: 18,
+  usufruct_registration_fee: 26,
+  servitude_registration_fee: 26,
+
+  declared_land_office_price: 24,
+
+  land_title: 20,
+  land_title_document: 28,
+  house_title: 20,
+  house_title_document: 28,
+  house_registration_book: 28,
+  land_lease_agreement: 28,
+
+  repair_details: 40,
+  remarks: 45,
+
+  created_by: 18,
+  is_active: 15,
+};
+
+export const TYPE_OF_TRANSACTION_MAP = {
+  buy: 'Buy',
+  sell: 'Sell',
+  rental: 'Rental',
+  usufruct: 'Usufruct',
+  mortgage: 'Mortgage',
+  subdivision: 'Subdivision',
+  consolidation: 'Consolidation',
+  servitude: 'Servitude',
+  other: 'Other',
+};
+
+export const TYPE_OF_PROPERTY_MAP = {
+  house_and_land_freehold: 'House and Land (Freehold)',
+  house_and_land_leasehold: 'House and Land (Leasehold)',
+  condominium_freehold: 'Condominium (Thai Quota)',
+  condominium_leasehold: 'Condominium (Foreign Quota)',
+  empty_land: 'Empty Land',
+};
+
+export const HANDOVER_DATE_MAP = {
+  at_closing: 'At Closing',
+  after_closing: 'After Closing',
+};
+
+export const INTENDED_CLOSING_DATE_MAP = {
+  on_or_before: 'On or Before',
+  after: 'After',
+  only_on: 'Only on',
+};
+
+export const ACCEPTABLE_PAYMENT_METHODS_MAP = {
+  cashiers_check_recommended: "Cashier's Check Recommended",
+  cash_transfer: 'Cash Transfer',
+  personal_check: 'Personal Check',
+  cash: 'Cash',
+  other: 'Other',
+};
+
+export const PLACE_OF_PAYMENT_MAP = {
+  thailand: 'Thailand',
+  other: 'Other',
+};
+
+export const PROPERTY_CONDITION_MAP = {
+  new: 'New',
+  good_working: 'Good Working',
+  as_seen: 'As Seen',
+  sometimes_items_to_be_repaired: 'Some items to be repaired',
+};
+
+export const YES_NO_MAP = {
+  yes: 'Yes',
+  no: 'No',
+};
+
+export const FURNITURE_INCLUDED_MAP = {
+  not_furniture_included: 'Not Furniture Included',
+  specific_furniture_included: 'Specific Furniture Included',
+  all_furniture_included: 'All Furniture Included',
+  selected_furniture_included: 'Selected Furniture Included',
+  all_furniture_except_personal_items: 'All Furniture Except Personal Items',
+};
+
+export const BUYER_SELLER_COST_MAP = {
+  buyer_only: 'Buyer Only',
+  seller_only: 'Seller Only',
+  share_50_50: 'Share (50/50)',
+};
+
+export const MORTGAGOR_MORTGAGEE_COST_MAP = {
+  mortgagor_only: 'Mortgagor Only',
+  mortgagee_only: 'Mortgagee Only',
+  share_50_50: 'Share (50/50)',
+};
+
+export const USUFRUCTUARY_OWNER_COST_MAP = {
+  usufructuary_only: 'Usufructuary Only',
+  owner_only: 'Owner Only',
+  share_50_50: 'Share (50/50)',
+};
+
+export const SERVITUDE_COST_MAP = {
+  dominant_owner_only: 'Dominant Owner Only',
+  servient_owner_only: 'Servient Owner Only',
+  share_50_50: 'Share (50/50)',
+};
+
+export const DECLARED_LAND_OFFICE_PRICE_MAP = {
+  actual_price: 'Actual Price',
+  lowest_possible_price: 'Lowest Possible Price',
+  mediocre_price: 'Mediocre Price',
+};
+
+export const LAND_TITLE_MAP = {
+  land_title_deed: 'Land Title Deed',
+  certificate_of_utilization: 'Certificate of Utilization',
+};
+
+export const HOUSE_TITLE_MAP = {
+  building_permit: 'Building Permit',
+  official_house_sale_and_purchase_agreement:
+    'Official House Sale and Purchase Agreement',
+};

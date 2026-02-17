@@ -1,4 +1,25 @@
-import { createApiResponse, asyncHandler } from '../utils/helper.js';
+import ExcelJS from 'exceljs';
+import {
+  createApiResponse,
+  asyncHandler,
+  PROPERTY_EXPORT_COLUMN_WIDTHS,
+  TYPE_OF_TRANSACTION_MAP,
+  TYPE_OF_PROPERTY_MAP,
+  HANDOVER_DATE_MAP,
+  INTENDED_CLOSING_DATE_MAP,
+  ACCEPTABLE_PAYMENT_METHODS_MAP,
+  PLACE_OF_PAYMENT_MAP,
+  PROPERTY_CONDITION_MAP,
+  YES_NO_MAP,
+  FURNITURE_INCLUDED_MAP,
+  BUYER_SELLER_COST_MAP,
+  MORTGAGOR_MORTGAGEE_COST_MAP,
+  USUFRUCTUARY_OWNER_COST_MAP,
+  SERVITUDE_COST_MAP,
+  DECLARED_LAND_OFFICE_PRICE_MAP,
+  LAND_TITLE_MAP,
+  HOUSE_TITLE_MAP,
+} from '../utils/helper.js';
 import { deleteS3File } from '../utils/s3-helper.js';
 import Property from '../models/property.model.js';
 import Client from '../models/client.model.js';
@@ -427,3 +448,149 @@ export const getPropertyStats = asyncHandler(async (req, res) => {
       )
     );
 }, 'Failed to retrieve property statistics');
+
+export const exportPropertiesExcel = asyncHandler(async (req, res) => {
+  const { client_id } = req.params;
+  const result = await Property.paginateWithSearch({
+    page: 1,
+    limit: 1000000, // export all
+    client_id: parseInt(client_id),
+    include: [
+      {
+        model: Client,
+        as: 'client',
+        attributes: ['id', 'name', 'family_name', 'email', 'nationality'],
+      },
+      {
+        model: User,
+        as: 'createdBy',
+        attributes: ['id', 'name', 'email'],
+      },
+    ],
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Properties');
+
+  const attributes = Object.keys(Property.rawAttributes);
+
+  // Optional: exclude some fields if needed
+  const excludedFields = ['createdAt', 'updatedAt'];
+  const filteredAttributes = attributes.filter(
+    field => !excludedFields.includes(field)
+  );
+
+  const formatHeader = field =>
+    field === 'client_id'
+      ? 'Client Name'
+      : field
+          .replace(/_/g, ' ')
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/\b\w/g, c => c.toUpperCase())
+          .trim();
+
+  worksheet.columns = filteredAttributes.map(field => ({
+    header: formatHeader(field),
+    key: field,
+    width: PROPERTY_EXPORT_COLUMN_WIDTHS[field] || 20,
+  }));
+
+  const formattedRows = result.result.map(property => ({
+    id: property.id,
+    client_name: property.client?.name || '',
+    property_name: property.property_name || '',
+    agent_name: property.createdBy?.name || '',
+    broker_company: property.broker_company || '',
+    transaction_type: TYPE_OF_TRANSACTION_MAP[property.transaction_type] || '',
+    property_type: TYPE_OF_PROPERTY_MAP[property.property_type] || '',
+    reservation_date: property.reservation_date || '',
+    intended_closing_date:
+      INTENDED_CLOSING_DATE_MAP[property.intended_closing_date] || '',
+    intended_closing_date_specific:
+      property.intended_closing_date_specific || '',
+    handover_date: HANDOVER_DATE_MAP[property.handover_date] || '',
+    selling_price: property.selling_price || '',
+    deposit: property.deposit || '',
+    intermediary_payment: property.intermediary_payment || '',
+    closing_payment: property.closing_payment || '',
+    acceptable_method_of_payment:
+      ACCEPTABLE_PAYMENT_METHODS_MAP[property.acceptable_method_of_payment] ||
+      '',
+    place_of_payment: PLACE_OF_PAYMENT_MAP[property.place_of_payment] || '',
+    property_condition:
+      PROPERTY_CONDITION_MAP[property.property_condition] || '',
+    house_warranty: YES_NO_MAP[property.house_warranty] || '',
+    warranty_condition: property.warranty_condition || '',
+    warranty_term: property.warranty_term || '',
+    furniture_included:
+      FURNITURE_INCLUDED_MAP[property.furniture_included] || '',
+    transfer_fee: BUYER_SELLER_COST_MAP[property.transfer_fee] || '',
+    withholding_tax: BUYER_SELLER_COST_MAP[property.withholding_tax] || '',
+    business_tax: BUYER_SELLER_COST_MAP[property.business_tax] || '',
+    lease_registration_fee:
+      BUYER_SELLER_COST_MAP[property.lease_registration_fee] || '',
+    mortgage_fee: MORTGAGOR_MORTGAGEE_COST_MAP[property.mortgage_fee] || '',
+    usufruct_registration_fee:
+      USUFRUCTUARY_OWNER_COST_MAP[property.usufruct_registration_fee] || '',
+    servitude_registration_fee:
+      SERVITUDE_COST_MAP[property.servitude_registration_fee] || '',
+    declared_land_office_price:
+      DECLARED_LAND_OFFICE_PRICE_MAP[property.declared_land_office_price] || '',
+    land_title: LAND_TITLE_MAP[property.land_title] || '',
+    land_title_document: property.land_title_document || '',
+    house_title: HOUSE_TITLE_MAP[property.house_title] || '',
+    house_title_document: property.house_title_document || '',
+    house_registration_book: property.house_registration_book || '',
+    land_lease_agreement: property.land_lease_agreement || '',
+    repair_details: property.repair_details || '',
+    remarks: property.remarks || '',
+    is_active:
+      property.is_active !== undefined
+        ? property.is_active
+          ? 'Active'
+          : 'Inactive'
+        : property.is_active,
+  }));
+
+  worksheet.addRows(formattedRows);
+  worksheet.getRow(1).font = { bold: true };
+  worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+  const lastColumnLetter = worksheet.getColumn(worksheet.columnCount).letter;
+
+  worksheet.autoFilter = {
+    from: 'A1',
+    to: `${lastColumnLetter}1`,
+  };
+
+  [
+    'reservation_date',
+    'intended_closing_date',
+    'intended_closing_date_specific',
+    'handover_date',
+  ].forEach(field => {
+    if (worksheet.getColumn(field)) {
+      worksheet.getColumn(field).numFmt = 'yyyy-mm-dd';
+    }
+  });
+
+  [
+    'selling_price',
+    'deposit',
+    'intermediary_payment',
+    'closing_payment',
+  ].forEach(field => {
+    if (worksheet.getColumn(field)) {
+      worksheet.getColumn(field).numFmt = '#,##0.00';
+    }
+  });
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
+
+  res.setHeader('Content-Disposition', 'attachment; filename=properties.xlsx');
+
+  await workbook.xlsx.write(res);
+  res.end();
+}, 'Failed to export properties to Excel');

@@ -44,7 +44,7 @@ authRoutes.get(
 );
 
 // GET /api/visas/export - Export visa records to Excel
-authRoutes.get('/export', exportVisasExcel);
+authRoutes.get('/export/:client_id', exportVisasExcel);
 // GET /api/visas/:id - Get visa record by ID
 authRoutes.get('/:id', validateVisaId, getVisaById);
 

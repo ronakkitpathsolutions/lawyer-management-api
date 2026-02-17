@@ -9,6 +9,7 @@ import {
   deleteProperty,
   togglePropertyStatus,
   getPropertyStats,
+  exportPropertiesExcel,
 } from '../controllers/property.controller.js';
 import {
   validateCreateProperty,
@@ -52,6 +53,9 @@ propertyRoutes.get(
   validateClientPropertySearch,
   getPropertiesByClientId
 );
+
+// GET /api/properties/export - Export property records to Excel
+propertyRoutes.get('/export/:client_id', exportPropertiesExcel);
 
 // GET /api/properties/:id - Get property record by ID
 propertyRoutes.get('/:id', validatePropertyId, getPropertyById);
